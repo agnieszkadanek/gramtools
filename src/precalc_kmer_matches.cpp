@@ -16,6 +16,34 @@ using namespace sdsl;
 
 void generate_all_kmers(std::vector<uint8_t> letters, std::vector<uint8_t>& substr, int k, int n, std::vector<std::vector<uint8_t>>& kmers);
 
+//Basically, the number of kmers in your alleles is bounded above by Sigma (allele_len -k+1), summing over alleles
+//FOr WG, you might have 22 million kmers from Pfalciparum genome plus 31 extra kmers for each SNP (say 50k SNPs), plus some negligible number from MSP3.4
+//For MSP3.4 - even if your alleles were all totally different you have 1000 alleles * (500-31+1) = 500k roughly.
+//Compare that with 4^31 = 4.6 * 10^18
+//Your hash table currently is enormous and full of zeroes.
+//The right thing to do is parse the PRG once and add the kmers in the alleles to the hash.
+
+
+//in pseudocode
+std::ifstream ref(reference_fasta);
+uint64_t d;
+
+while (ref>>d)
+  {
+    //  split line into kmers
+    foreach (kmer)
+    {
+      if (exists hashfunction(kmer))
+	{
+	}
+      else
+	{
+	  hashfunction(kmer)=1;
+	}
+    }
+  }
+
+
 void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa, int k,   
 			   sequence_map<std::vector<uint8_t>, std::list<std::pair<uint64_t,uint64_t>>>& kmer_idx, 
 			   sequence_map<std::vector<uint8_t>, std::list<std::pair<uint64_t,uint64_t>>>& kmer_idx_rev,
