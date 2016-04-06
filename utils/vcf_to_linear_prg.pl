@@ -4,9 +4,10 @@ use strict;
 use Getopt::Long; 
 
 
-my %vars = ( "vcf" => "",
-	     "ref" => "");
-
+my %vars = ( "vcf" => "zam",
+	     "ref" => "",
+             "min_freq" =>0,
+             "help"=>'');
 
 
 ## For 1000 genomes VCF, can use
@@ -14,39 +15,46 @@ my %vars = ( "vcf" => "",
 ## For human ref genome my  /Net/birch/data/zam/ref/hs/fasta/grc37/Homo_sapiens.GRCh37.60.dna.WHOLE_GENOME.fa";
 &GetOptions(
     ##mandatory args
-    'vcf:s' =>\$vars{"vcf"},#string
-    'ref:s' =>\$vars{"ref"},#string
+    'vcf:s' =>\$vars{"vcf"},
+    'ref:s' =>\$vars{"ref"},
+    'min_freq:s' => \$vars{"min_freq"},
+    'help'  =>\$vars{"help"},
     );
+
 
 check_args(\%vars);
 
 
-
 ## load the reference into memory:
-my %refseq = ();
-get_ref_seq($vars{"ref"}, \%refseq); #chr--> long string
+my %refseq = ();#chr--> long string
+my @chroms=();#collect list of chromosomes
+get_ref_seq($vars{"ref"}, \%refseq, \@chroms); 
 
 ## parse the VCF and print a linearised PRG in gramtools format
-print_linearised_poa(\%refseq, $vars{"ref"}, $vars{"vcf"});
+print_linearised_poa(\%refseq, $vars{"ref"}, 
+		     $vars{"vcf"}, $vars{"min_freq"},
+		     \@chroms);
 
 
 sub print_linearised_poa_for_one_chr
 {
-    my ($href_refsequence, $reff, $vcf_file, $chrom, $nextvar)= @_;
-    
+    my ($href_refsequence, $reff, $vcf_file, $chrom, $nextvar, $min_freq)= @_;
+
+
     if (!exists $href_refsequence->{$chrom})
     {
 	die("Cannot find sequence for chromosome $chrom");
     }
 
     my $seq = $href_refsequence->{$chrom};
-    open(VCF, $vcf_file)||die("Cannot open VCF file $vcf");
+    open(VCF, $vcf_file)||die("Cannot open VCF file $vcf_file");
     my $curr_pos=1; ## 1-based
 
     while (<VCF>)
     {
 	my $lyne  = $_;
 	chomp $lyne;
+
 	if ($lyne !~ /^\#/)
 	{
 	    ## I will work entirely in 1-based coordinates, except at the point of extracting substrings.
@@ -54,14 +62,36 @@ sub print_linearised_poa_for_one_chr
 
 	    my @sp = split(/\t/, $lyne);
 
-	    if ($sp[4] !~ /[^ACGTacgt/)
+	    if ($sp[4] !~ /^[ACGTacgt]+$/)
 	    {
 		##excluding lines which do not properly specify the alternate allele.
 		next;
 	    }
 
+
+	    my $info = $sp[7];
+	    if ($min_freq>0)
+	    {
+
+		if ($info =~ /\;AF=([0123456789\.]+)/)
+		{
+		    my $freq = $1;
+
+		    if ($freq<$min_freq)
+		    {
+			next; #ignore this variant if too rare
+		    }
+		}
+		else
+		{
+		    #if no allele frequency annotation, do not filter by frequency
+		    
+		}
+	    }
+
 	    if ($sp[0] eq $chrom)
 	    {
+
 		if ($curr_pos < $sp[1] )
 		{
 		    my $len = $sp[1]-$curr_pos;
@@ -72,9 +102,10 @@ sub print_linearised_poa_for_one_chr
 		#replace N with C
 		$sp[3]=~ s/[^ACGTacgt]/C/g;
 
-		##print the ref allele first
-		print $sp[3];
 
+
+		print $nextvar;#left marker before the site starts
+		print $sp[3];		##print the ref allele first
 		print $nextvar+1;#even numbers between alleles
 
 		##Now work our way through the alternate alleles
@@ -106,6 +137,10 @@ sub print_linearised_poa_for_one_chr
 		$nextvar+=2;
 		$curr_pos=$sp[1]+length($sp[3]);
 	    }
+	    else
+	    {
+		#ignore
+	    }
 	}
     }
     close(VCF);
@@ -122,20 +157,24 @@ sub print_linearised_poa_for_one_chr
 }
 sub print_linearised_poa
 {
-    my ($href_refseq, $reference, $vcf) = @_;
-    my @chrs = (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"X","Y");
+    my ($href_refseq, $reference, $vcf, $min_f, $aref_chroms) = @_;
+
+    my @chrs = @$aref_chroms; #(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,"X","Y");
 
     my $next_var_number = 5;
     foreach my $chr (@chrs)
     {
+	## so this is not ideal - parse the VCF once for each chromosome
 	$next_var_number = 
-	    print_linearised_poa_for_one_chr($href_refseq, $reference, $vcf, $chr, $next_var_number);
+	    print_linearised_poa_for_one_chr($href_refseq, $reference, 
+					     $vcf, $chr, 
+					     $next_var_number, $min_f);
     }
 
 }
 sub get_ref_seq
 {
-    my ($fasta, $href) = @_;
+    my ($fasta, $href, $aref_chroms) = @_;
 
     my $chr = "";
     my $seq = "";
@@ -147,7 +186,7 @@ sub get_ref_seq
 	my $line = $_;
 	chomp $line;
 
-	if ($line =~ /^>(\S+)\s+/)
+	if ($line =~ /^>(\S+)/)
 	{
 	    if ($first !=1)
 	    {
@@ -156,6 +195,7 @@ sub get_ref_seq
 	    }
 	    $first=0;
 	    $chr = $1;
+	    push @$aref_chroms, $chr;
 	    $seq="";
 	}
 	else
@@ -176,21 +216,49 @@ sub get_ref_seq
 
 sub check_args
 {
-    my ($href) = $_;
+    my ($href) = @_;
 
-    if (!(-e $vars{"vcf"}))
+    if ($href->{"help"})
+    {
+	print "Usage: perl vcf_to_linear_prg.pl --vcf <VCF> --ref species.fasta --min_freq 0.01\n";
+	print "\n";
+	print "This script is not super-sophisticated - it builds a lin-PRG\n";
+	print "as it sweeps once through the VCF\n";
+	print "If it meets a new VCF record that overlaps an old one,\nit will ignore it.\n";
+	print "The most important consequence is that it won't encode SNPs \"underneath\" a long deletion\n";
+	exit(0);
+    }
+
+    if ($href->{"vcf"} eq "")
+    {
+	die("You must specify a VCF file with --vcf \n");
+    }
+
+    if ($href->{"ref"} eq "")
+    {
+	die("You must specify a reference fasta file with --ref \n");
+    }
+	
+    if (!(-e $href->{"vcf"}))
     {
 	print "Specified VCF file ";
-	print $vars{"vcf"};
+	print $href->{"vcf"};
 	die(" does not exist");
     }
 
 
-    if (!(-e $vars{"ref"}))
+    if (!(-e $href->{"ref"}))
     {
 	print "Specified reference fasta file ";
-	print $vars{"ref"};
+	print $href->{"ref"};
 	die(" does not exist");
     }
+
+    ##let's just avoid any mess with tiny numbers
+    if ($href->{"min_freq"}<0.0001)
+    {
+	$href->{"min_freq"}=0;
+    }
+
 }
 
