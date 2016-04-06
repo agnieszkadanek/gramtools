@@ -81,10 +81,10 @@ int main(int argc, char* argv[]) {
     sa_intervals_rev=kmer_idx_rev[kmer];
     sites=kmer_sites[kmer];
 
-    it=sa_intervals.begin();
-    it_rev=sa_intervals_rev.begin();
-    if (kmers_in_ref.find(kmer)!=kmers_in_ref.end())  res_it=bidir_search_bwd(csa, (*it).first, (*it).second, (*it_rev).first, (*it_rev).second, p.begin(),p.begin()+p.size()-k-1, sa_intervals, sa_intervals_rev, sites, mask_a, maxx, first_del);
-    else res_it=bidir_search_bwd(csa, -1, -1, -1, -1, p.begin(),p.begin()+p.size()-k-1, sa_intervals, sa_intervals_rev, sites, mask_a, maxx, first_del);
+    //it=sa_intervals.begin();
+    //it_rev=sa_intervals_rev.begin();
+    if (kmers_in_ref.find(kmer)!=kmers_in_ref.end())  res_it=bidir_search_bwd(csa, -1, -1, -1, -1, p.begin(),p.begin()+p.size()-k-1, sa_intervals, sa_intervals_rev, sites, mask_a, maxx, first_del);
+    else res_it=bidir_search_bwd(csa, 0, csa.size(), 0, csa.size(), p.begin(),p.begin()+p.size()-k-1, sa_intervals, sa_intervals_rev, sites, mask_a, maxx, first_del);
 
     //clear p, sa_intervals etc
     no_reads++;
