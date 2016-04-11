@@ -11,17 +11,17 @@ using namespace sdsl;
 
 uint64_t parse_masks(std::vector<uint64_t>& mask_s, std::vector<int>& mask_a, string sites_fname, string alleles_fname, std::vector<std::vector<int>>& covgs) {
   int no_alleles,a;
-  uint64_t d,no_sites;
+  uint64_t d;
+  uint64_t no_sites=0;
   std::ifstream h1(sites_fname);
   std::ifstream h2(alleles_fname);
-  std::vector<int> v; 
+  std::vector<int>* v = new std::vector<int>; 
 
-  no_sites=0;
   while (h1>>d)
     { 
       if (d>no_sites) {
 	no_sites=d;
-	covgs.push_back(v);
+	covgs.push_back(*v);
       }
       mask_s.push_back(d);
     }
@@ -34,7 +34,9 @@ uint64_t parse_masks(std::vector<uint64_t>& mask_s, std::vector<int>& mask_a, st
     { 
       if (a>no_alleles) no_alleles=a;
       if (a<no_alleles && a!=0) {
-	covgs[mask_s[i]-6].assign(no_alleles,0); //should have -5? might change anyway if I don't end up using mask_s
+	//covgs[mask_s[i]-5].reserve(no_alleles);
+	//std::fill_n(covgs[mask_s[i]-5].begin(), no_alleles, 0);
+	//covgs[mask_s[i]-6](no_alleles,0); //should have -5? might change anyway if I don't end up using mask_s
 	no_alleles=a;
       }
       i++;
