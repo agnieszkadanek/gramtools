@@ -96,3 +96,6 @@ csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_constr(std::string fname,
 
    return(csa);
 }
+
+
+// add this - void csa_destr

@@ -136,6 +136,7 @@ void SiteOverlapTracker::clear()
   vec.clear();
 }
 
+/*
 int main()
 {
   // compile thus:
@@ -163,28 +164,24 @@ int main()
       v->print_all_info();
     }
   
-  /* this is what you see 
+  // this is what you see 
 
-  Marker, site id 0, odd-id 5:
-  Bits are: 
-  01
-  Marker, site id 1, odd-id 7:
-  Bits are: 
-  001
-  Marker, site id 2, odd-id 9:
-  Bits are: 
-  0100
-  Marker, site id 3, odd-id 11:
-  Bits are: 
-  00001
-  Marker, site id 4, odd-id 13:
-  Bits are: 
-  000000000000000000000100000000
-
-  */
-
-
-
+//  Marker, site id 0, odd-id 5:
+//  Bits are: 
+//  01
+//  Marker, site id 1, odd-id 7:
+//  Bits are: 
+//  001
+//  Marker, site id 2, odd-id 9:
+//  Bits are: 
+//  0100
+//  Marker, site id 3, odd-id 11:
+//  Bits are: 
+//  00001
+//  Marker, site id 4, odd-id 13:
+//  Bits are: 
+//  000000000000000000000100000000
 
   return 1;
 }
+*/

@@ -1,3 +1,4 @@
+
 #include "sdsl/suffix_arrays.hpp"
 #include "sdsl/wavelet_trees.hpp"
 #include <fstream>
@@ -45,8 +46,8 @@ uint64_t parse_masks(std::vector<uint64_t>& mask_s, std::vector<int>& mask_a, st
   h2.close();
 
   if (no_alleles>0) {
-    covgs[covgs.size()-1].assign(no_alleles,0);
+    //covgs[covgs.size()-1].assign(no_alleles,0);
   }
-
+  delete(v);
   return(no_sites);
 }
