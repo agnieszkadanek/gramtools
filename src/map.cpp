@@ -24,7 +24,8 @@ void timestamp();
 //argv[9] - memory log file for CSA
 //argv[10] - size of precalculated kmers
 //argv[11] - kmer file
-
+//argv[12] - file, one line per site, each line just has an integer - number alleles at that site
+//argv[13] - number of kmers in kmer file
 int main(int argc, char* argv[]) {
 
 	std::vector<uint64_t> mask_s;
@@ -36,8 +37,17 @@ int main(int argc, char* argv[]) {
 	std::ofstream out(argv[6]); 
 	std::ofstream out2(argv[7]);
 
-	sequence_map<std::vector<uint8_t>, std::list<std::pair<uint64_t,uint64_t>>> kmer_idx,kmer_idx_rev;
-	sequence_map<std::vector<uint8_t>, SiteOverlapTracker ZAHARA  > kmer_sites;
+	SiteMarkerArray const * const prg_sites = new SiteMarkerArray(std::string(argv[12]));
+	SiteOverlapTracker* tracker = new SiteOverlapTracker(prg_sites);//used for bidir search
+
+	//associative array, key->value are kmer->BWT interval
+	sequence_map<std::vector<uint8_t>, interval_list> kmer_idx,kmer_idx_rev;
+
+	//to accelerate mapping will keep info on kmer->BWT interval and kmer->site overlap tracking info
+	SiteOverlapTracker* kmer_tracker_array =  new SiteOverlapTracker[atoi(argv[13])];
+	//assoc array, key-> value are kmer->index of corresponding tracker in the kmer_tracker_array
+	sequence_map<std::vector<uint8_t>, uint32_t> kmer_to_tracker_index;
+
 	sequence_set<std::vector<uint8_t>> kmers_in_ref;
 
 	//not using mask_s anymore?
@@ -56,18 +66,22 @@ int main(int argc, char* argv[]) {
 	bool first_del=false;
 
 	int k=atoi(argv[10]); //verify input
-	precalc_kmer_matches(csa,k,kmer_idx,kmer_idx_rev,kmer_sites,mask_a,maxx,kmers_in_ref,argv[11]);
+	precalc_kmer_matches(csa,k,
+			     kmer_idx,kmer_idx_rev,
+			     kmer_tracker_array, kmer_to_tracker_index,
+			     mask_a,maxx,kmers_in_ref,argv[11]);
 	timestamp();
 
-	std::list<std::pair<uint64_t,uint64_t>> sa_intervals, sa_intervals_rev;
-	std::list<std::pair<uint64_t,uint64_t>>::iterator it, it_rev;
-	std::list<std::vector<std::pair<uint32_t, std::vector<int>>>> sites;
+	interval_list sa_intervals, sa_intervals_rev;
+	interval_list::iterator it, it_rev;
+	//std::list<std::vector<std::pair<uint32_t, std::vector<int>>>> sites;//this is now a tracker
 	std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>::iterator it_s;
 	std::vector<uint8_t>::iterator res_it;
 
 	for (auto q: inputReads)
 	{
 		// If you declare p inside the while scope, it is destroyed/created automatically in every loop
+
 		std::vector<uint8_t> p;
 
 		//logging
@@ -83,11 +97,14 @@ int main(int argc, char* argv[]) {
 		}
 
 		std::vector<uint8_t> kmer(p.begin()+p.size()-k,p.end()); //is there a way to avoid making this copy?
-		if (kmer_idx.find(kmer)!=kmer_idx.end() && kmer_idx_rev.find(kmer)!=kmer_idx_rev.end() && kmer_sites.find(kmer)!=kmer_sites.end()) {
+		if (kmer_idx.find(kmer)!=kmer_idx.end() && 
+		    kmer_idx_rev.find(kmer)!=kmer_idx_rev.end() && 
+		    kmer_to_tracker_index.find(kmer)!=kmer_to_tracker_index.end()) {
 		  sa_intervals=kmer_idx[kmer];
 		  sa_intervals_rev=kmer_idx_rev[kmer];
-		  sites=kmer_sites[kmer];	
-		  
+		  //sites=kmer_sites[kmer];	
+		  SiteOverlapTracker* tracker = kmer_tracker_array[kmer_to_tracker_index[kmer]];
+
 		  it=sa_intervals.begin();
 		  it_rev=sa_intervals_rev.begin();
 
@@ -98,7 +115,8 @@ int main(int argc, char* argv[]) {
 					  (*it_rev).first, (*it_rev).second, 
 					  p.begin(),p.begin()+p.size()-k, 
 					  sa_intervals, sa_intervals_rev, 
-					  site_tracker, mask_a, maxx, first_del);
+					  tracker, prg_sites, 
+					  mask_a, maxx, first_del);
 
 		  no_occ=0;
 		  for (it=sa_intervals.begin();it!=sa_intervals.end();++it)

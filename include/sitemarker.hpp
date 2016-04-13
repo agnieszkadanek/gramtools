@@ -56,11 +56,9 @@ private:
 class SiteOverlapTracker
 {
 public:
-  SiteOverlapTracker(SiteMarkerArray*);
-  void push(int site_id, int allele);
+  SiteOverlapTracker();
+  void push(int site_id, int allele, SiteMarkerArray* sma);
   void clear();
   std::vector<SiteMarker*> vec;
-private:
-
-  SiteMarkerArray* sma; //pointer to "PRG" object but not ownership
 };
+

@@ -12,7 +12,8 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 		  uint64_t num_idx,
 		  uint32_t num, bool last,
 		  std::vector<int> mask_a,
-		  SiteOverlapTracker* tracker)
+		  SiteOverlapTracker* tracker,
+		  SiteMarkerArray const * const prg_sites)
 {
 
   uint32_t site;
@@ -35,7 +36,7 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
       allele=mask_a[csa[num_idx]];
     }
 
-  tracker.push(site, allele );  
+  tracker.push(site, allele, prg_sites );  
   
 }  
 

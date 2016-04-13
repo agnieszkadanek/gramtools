@@ -18,6 +18,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals, 
 						interval_list& sa_intervals_rev,
 						SiteOverlapTracker* tracker,
+						SiteMarkerArray const * const  prg_sites,
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						)
 {
@@ -106,7 +107,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	    //this is the first site that the read overlaps
 	    sa_intervals.push_back(std::make_pair(left_new,right_new));
 	    sa_intervals_rev.push_back(std::make_pair(left_rev_new,right_rev_new));
-	    get_location(csa,i,num,last, mask_a, &tracker);
+	    get_location(csa,i,num,last, mask_a, tracker, prg_sites);
 	  }
 	    //there will be entries with pair.second empty (corresp to allele) coming from crossing the last marker
 	    //can delete them here or in top a fcn when calculating coverages
@@ -115,7 +116,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	      //second allele boundary crosses within one site
 	      if (num%2==0)
 		{
-		  get_location(csa,i,num,last, mask_a, &tracker);
+		  get_location(csa,i,num,last, mask_a, tracker, prg_sites);
 		}
 	      //else ?
 	    }
@@ -124,7 +125,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	      //read crossing a second site
 	      *it=std::make_pair(left_new,right_new);
 	      *it_rev=std::make_pair(left_rev_new,right_rev_new);
-	      get_location(csa,i,num,last, mask_a, &tracker);
+	      get_location(csa,i,num,last, mask_a, tracker, prg_sites);
 	      //++it;
 	      //++it_rev;
 	      //++it_s;

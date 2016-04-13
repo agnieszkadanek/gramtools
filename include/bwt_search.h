@@ -54,7 +54,8 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 		  uint64_t num_idx,
 		  uint32_t num, bool last,
 		  std::vector<int> mask_a,
-		  SiteOverlapTracker* tracker);
+		  SiteOverlapTracker* tracker,
+		  SiteMarkerArray* prg_sites);
 
 bool skip(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
                       uint64_t& left, uint64_t& right,
