@@ -128,8 +128,12 @@ SiteOverlapTracker::SiteOverlapTracker(SiteMarkerArray* SMA): sma(SMA)
 
 void SiteOverlapTracker::push(int site_id, int allele)
 {
-  vec.push_back(sma->get_site_and_set_allele(site_id, allele));
+  if (site_id==vec.back().site_id)
+      vec.back().set_allele(allele);
+  else
+    vec.push_back(sma->get_site_and_set_allele(site_id, allele));
 }
+
 
 void SiteOverlapTracker::clear()
 {

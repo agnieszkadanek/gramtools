@@ -11,9 +11,9 @@
 using namespace sdsl;
 
 bool skip(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
-                      uint64_t& left, uint64_t& right,
-                      uint64_t& left_rev, uint64_t& right_rev,
-                      uint32_t num)
+	  uint64_t& left, uint64_t& right,
+	  uint64_t& left_rev, uint64_t& right_rev,
+	  uint32_t num)
 {
   uint64_t site_end,site_start,ind_start,ind_end;
   bool last=false;

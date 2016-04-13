@@ -17,15 +17,13 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						std::vector<uint8_t>::iterator pat_end,
 						interval_list& sa_intervals, 
 						interval_list& sa_intervals_rev,
-						SiteMarkerArray* sites,
-						//std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>& sites,
+						SiteOverlapTracker* tracker,
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						)
 {
 
  
   // zam removing  std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>::iterator it_s,it_s_end;
-  SiteOverlapTracker tracker(sma);
 
   std::vector<uint8_t>::iterator pat_it=pat_end;
 
@@ -38,7 +36,6 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   bool last,ignore;
   uint64_t left_new, right_new, left_rev_new, right_rev_new;
   std::vector<std::pair<uint32_t, std::vector<int>>> empty_pair_vector;
-  std::vector<int> allele_empty;
   std::vector<std::pair<uint64_t,uint64_t>> res;   
   uint64_t init_list_size,j;
 
@@ -105,23 +102,29 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	
 	  // how to alternate between forward and backward?
 	  if (it==sa_intervals.begin() && first_del==false && !ignore) {
+
+	    //this is the first site that the read overlaps
 	    sa_intervals.push_back(std::make_pair(left_new,right_new));
 	    sa_intervals_rev.push_back(std::make_pair(left_rev_new,right_rev_new));
-	    get_location(csa,i,num,last,allele_empty,mask_a, &tracker);
-	    //sites.push_back(std::vector<std::pair<uint32_t, std::vector<int>>> (1,sal));
+	    get_location(csa,i,num,last, mask_a, &tracker);
 	  }
 	    //there will be entries with pair.second empty (corresp to allele) coming from crossing the last marker
 	    //can delete them here or in top a fcn when calculating coverages
 	  else {
 	    if (ignore) {
+	      //second allele boundary crosses within one site
 	      if (num%2==0)
-		get_location(csa,i,num,last,sites.back().back().second,mask_a, &tracker);
+		{
+		  get_location(csa,i,num,last, mask_a, &tracker);
+		}
 	      //else ?
 	    }
 	    else {
+
+	      //read crossing a second site
 	      *it=std::make_pair(left_new,right_new);
 	      *it_rev=std::make_pair(left_rev_new,right_rev_new);
-	      get_location(csa,i,num,last,allele_empty,mask_a, &tracker));
+	      get_location(csa,i,num,last, mask_a, &tracker);
 	      //++it;
 	      //++it_rev;
 	      //++it_s;
@@ -137,18 +140,18 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
     }
     
     assert(sa_intervals.size()==sa_intervals_rev.size());
-    assert(sa_intervals.size()==sites.size());
-
+    if (tracker != NULL)
+      {
+	assert(sa_intervals.size()==tracker.vec.size());
+      }
     it=sa_intervals.begin();
     it_rev=sa_intervals_rev.begin();	
-    //it_s=sites.begin();
     
-    while (it!=sa_intervals.end() && it_rev!=sa_intervals_rev.end() && it_s!=sites.end()) {	
+    while (it!=sa_intervals.end() && it_rev!=sa_intervals_rev.end() ) {	
       //calculate sum to return- can do this in top fcns
       if (bidir_search(csa,(*it).first,(*it).second,(*it_rev).first,(*it_rev).second,c)>0) {
 	++it;
 	++it_rev;
-	//++it_s;
       }
       else {
 	if (it==sa_intervals.begin()) first_del=true;
@@ -156,7 +159,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	it=sa_intervals.erase(it);
 	it_rev=sa_intervals_rev.erase(it_rev);
 	//it_s=sites.erase(it_s);
-	tracker.clear();
+	// QUESTION - TODO HERE FOR TRACKER??????????????????
       }
     }
   }

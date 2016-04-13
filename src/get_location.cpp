@@ -11,25 +11,31 @@ using namespace sdsl;
 void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 		  uint64_t num_idx,
 		  uint32_t num, bool last,
-		  std::vector<int>& allele,
 		  std::vector<int> mask_a,
 		  SiteOverlapTracker* tracker)
 {
+
   uint32_t site;
-  
-  if (num%2==1) {
-    site=(num-5)/2;;
-    if (!last)
-      {
-	//allele.push_back(1);
-	tracker.push(site, 1 );
-      }
-  }
-  else {
-    site=((num-1)-5)/2;
-    tracker.push(site, mask_a[csa[num_idx]] );
-    //allele.push_back(mask_a[csa[num_idx]]);
-  }
+  int allele;
+  if (num%2==1) 
+    {
+      site=(num-5)/2;;
+      if (!last)
+	{
+	  allele=1;
+	}
+      else
+	{
+	  return;
+	}
+    }
+  else 
+    {
+      site=((num-1)-5)/2;
+      allele=mask_a[csa[num_idx]];
+    }
+
+  tracker.push(site, allele );  
   
 }  
 
