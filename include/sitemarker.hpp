@@ -57,8 +57,12 @@ class SiteOverlapTracker
 {
 public:
   SiteOverlapTracker();
+  assign(SiteOverlapTracker* from);
   void push(int site_id, int allele, SiteMarkerArray* sma);
   void clear();
   std::vector<SiteMarker*> vec;
 };
+
+
+
 
