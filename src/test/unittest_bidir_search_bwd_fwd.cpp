@@ -439,7 +439,12 @@ TEST(BackwardSearchTest, One_match_many_sites){
   EXPECT_EQ(true,first_del);
   EXPECT_EQ(1,sa_intervals.size());
   EXPECT_EQ(no_occ,1);
-
+  EXPECT_EQ(reusable_tracker->vec.size(),5);
+  EXPECT_EQ(reusable_tracker->vec[0]->count_set_alleles(),0);
+  EXPECT_EQ(reusable_tracker->vec[1]->count_set_alleles(),0);
+  EXPECT_EQ(reusable_tracker->vec[2]->count_set_alleles(),0);
+  EXPECT_EQ(reusable_tracker->vec[3]->count_set_alleles(),0);
+  EXPECT_EQ(reusable_tracker->vec[4]->count_set_alleles(),0);
   sa_intervals.clear();
   sa_intervals_rev.clear();
   sites.clear();

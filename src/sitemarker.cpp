@@ -25,6 +25,23 @@ void SiteMarker::set_allele(uint32_t i)
     }
 }
 
+
+int SiteMarker::count_set_alleles()
+{
+  uint32_t i;
+  int count=0;
+  for (i=0; i<alleles.size(); i++)
+    {
+      if (alleles[i]==1)
+	{
+	  count++;
+	}
+    }
+  return count;
+}
+
+
+
 void SiteMarker::set_these_alleles(std::vector<int> v)
 {
   for (uint32_t i : v)

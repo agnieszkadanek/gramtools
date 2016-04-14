@@ -152,6 +152,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	it=sa_intervals.erase(it);
 	it_rev=sa_intervals_rev.erase(it_rev);
 	//it_s=sites.erase(it_s);
+	tracker->clear();
 	// QUESTION - TODO HERE FOR TRACKER??????????????????
       }
     }

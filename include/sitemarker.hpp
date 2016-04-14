@@ -23,6 +23,7 @@ public:
   void zero_all_alleles();
   void set_allele(uint32_t i);//set it to 1 if we cross this allele
   void set_these_alleles(std::vector<int> v); //to set 5th allele, do    alleles[5]=1;
+  int count_set_alleles();
   int get_num_alleles(); // this returns alleles.size();
   int get_allele_bit(uint32_t i);
   void print_all_info();
