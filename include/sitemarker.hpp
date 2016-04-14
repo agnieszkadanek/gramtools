@@ -1,3 +1,6 @@
+#ifndef __SITEMARKER__
+#define __SITEMARKER__
+
 #include <vector>
 #include <boost/dynamic_bitset.hpp>
 
@@ -57,7 +60,6 @@ class SiteOverlapTracker
 {
 public:
   SiteOverlapTracker();
-  assign(SiteOverlapTracker* from);
   void push(int site_id, int allele, SiteMarkerArray* sma);
   void clear();
   std::vector<SiteMarker*> vec;
@@ -65,4 +67,6 @@ public:
 
 
 
+
+#endif
 

@@ -37,8 +37,8 @@ int main(int argc, char* argv[]) {
 	std::ofstream out(argv[6]); 
 	std::ofstream out2(argv[7]);
 
-	SiteMarkerArray const * const prg_sites = new SiteMarkerArray(std::string(argv[12]));
-	SiteOverlapTracker* reusable_tracker = new SiteOverlapTracker(prg_sites);//used for bidir search
+	SiteMarkerArray * prg_sites = new SiteMarkerArray(std::string(argv[12]));
+	SiteOverlapTracker* reusable_tracker = new SiteOverlapTracker();//used for bidir search
 
 	//associative array, key->value are kmer->BWT interval
 	sequence_map<std::vector<uint8_t>, interval_list> kmer_idx,kmer_idx_rev;
@@ -68,8 +68,8 @@ int main(int argc, char* argv[]) {
 
 	int k=atoi(argv[10]); //verify input
 	precalc_kmer_matches(csa,k,
-			     kmer_idx,kmer_idx_rev,
-			     kmer_tracker_array, kmer_to_tracker_index,
+			     kmer_idx,kmer_idx_rev,			     
+			     kmer_tracker_array, prg_sites, kmer_to_tracker_index,
 			     mask_a,maxx,kmers_in_ref,argv[11]);
 	timestamp();
 
@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
 		  sa_intervals_rev=kmer_idx_rev[kmer];
 		  //sites=kmer_sites[kmer];	
 
-		  reusable_tracker.vec = kmer_tracker_array[kmer_to_tracker_index[kmer]].vec;
+		  reusable_tracker->vec = kmer_tracker_array[kmer_to_tracker_index[kmer]].vec;
 
 		  it=sa_intervals.begin();
 		  it_rev=sa_intervals_rev.begin();
@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
 
 		  sa_intervals.clear();
 		  sa_intervals_rev.clear();
-		  reusable_tracker.clear();
+		  reusable_tracker->clear();
 		}
 		else no_occ=0;
 	   

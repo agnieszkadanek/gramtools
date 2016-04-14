@@ -21,8 +21,8 @@ using namespace sdsl;
 void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa, int k,   
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_idx, 
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_idx_rev,
-			   // sequence_map<std::vector<uint8_t>, std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>>& kmer_sites,
 			   SiteOverlapTracker* global_tracker_array,//prealloced array
+			   SiteMarkerArray * prg_sites,
 			   sequence_map<std::vector<uint8_t>, uint32_t>& kmer_to_tracker_index,
 			   std::vector<int> mask_a, uint64_t maxx, 
 			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile) 
@@ -58,7 +58,8 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 		  bidir_search_bwd(csa,0,csa.size(),0,csa.size(),
 				   kmer.begin(),kmer.end(),
 				   kmer_idx[kmer],kmer_idx_rev[kmer],
-				   global_tracker_array[kmer_counter],
+				   &global_tracker_array[kmer_counter],
+				   prg_sites,
 				   mask_a,maxx,first_del);
 
 		if (!first_del) kmers_in_ref.insert(kmer);

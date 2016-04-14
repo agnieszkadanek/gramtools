@@ -8,24 +8,25 @@
 using namespace sdsl;
 
 std::vector<uint8_t>::iterator bidir_search_fwd(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_rev,
-                      uint64_t left, uint64_t right,
-		      uint64_t left_rev, uint64_t right_rev,
-		      std::vector<uint8_t>::iterator pat_begin, std::vector<uint8_t>::iterator pat_end,
-		      std::list<std::pair<uint64_t,uint64_t>>& sa_intervals, 
-		      std::list<std::pair<uint64_t,uint64_t>>& sa_intervals_rev,
-		      std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>& sites,
-		      std::vector<int> mask_a, uint64_t maxx, bool& first_del)
+						uint64_t left, uint64_t right,
+						uint64_t left_rev, uint64_t right_rev,
+						std::vector<uint8_t>::iterator pat_begin, 
+						std::vector<uint8_t>::iterator pat_end,
+						interval_list& sa_intervals, 
+						interval_list& sa_intervals_rev,
+						SiteOverlapTracker* tracker,
+						SiteMarkerArray * prg_sites,
+						std::vector<int> mask_a, uint64_t maxx, bool& first_del)
 
 //need to swap * with *_rev everywhere
 {
-  std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>::iterator it_s,it_s_end;
+  //std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>::iterator it_s,it_s_end;
+
   std::vector<uint8_t>::iterator pat_it=pat_begin;
-  std::list<std::pair<uint64_t,uint64_t>>::iterator it, it_rev, it_end, it_rev_end;
+  interval_list::iterator it, it_rev, it_end, it_rev_end;
   uint8_t c=*pat_begin;
   bool last,ignore;
   uint64_t left_new, right_new, left_rev_new, right_rev_new;
-  std::vector<std::pair<uint32_t, std::vector<int>>> empty_pair_vector;
-  std::vector<int> allele_empty;
   std::vector<std::pair<uint64_t,uint64_t>> res;  
 
   assert(left<right);

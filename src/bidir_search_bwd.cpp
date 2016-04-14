@@ -5,7 +5,7 @@
 #include <tuple>
 #include <cstdint>
 #include "sitemarker.hpp"
-#include "bidir_search_bwd.hpp"
+//#include "bidir_search_bwd.hpp"
 
 using namespace sdsl;
 
@@ -18,25 +18,17 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals, 
 						interval_list& sa_intervals_rev,
 						SiteOverlapTracker* tracker,
-						SiteMarkerArray const * const  prg_sites,
+						SiteMarkerArray * prg_sites,
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						)
 {
 
- 
-  // zam removing  std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>::iterator it_s,it_s_end;
-
   std::vector<uint8_t>::iterator pat_it=pat_end;
-
   interval_list::iterator it, it_rev, it_end, it_rev_end;
-  //  std::list<std::pair<uint64_t,uint64_t>>::iterator it, it_rev,it_end,it_rev_end;
-
-
 
   uint8_t c;
   bool last,ignore;
   uint64_t left_new, right_new, left_rev_new, right_rev_new;
-  std::vector<std::pair<uint32_t, std::vector<int>>> empty_pair_vector;
   std::vector<std::pair<uint64_t,uint64_t>> res;   
   uint64_t init_list_size,j;
 
