@@ -32,7 +32,8 @@ EXTRAFLAGS += -O0
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-TESTS = unittest_bidir_search_bwd_fwd vBWT
+#TESTS = unittest_bidir_search_bwd_fwd vBWT
+TESTS = vBWT
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
@@ -96,8 +97,8 @@ get_location.o: $(USER_DIR)/get_location.cpp $(VBWT_HEADERS)/bwt_search.h $(GTES
 bidir_search_bwd.o: $(USER_DIR)/bidir_search_bwd.cpp $(VBWT_HEADERS)/bwt_search.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) -I $(SDSL_HEADERS) -I $(VBWT_HEADERS) -I $(BOOST_HEADERS) -L $(LIBS) -c $(USER_DIR)/bidir_search_bwd.cpp -lsdsl -ldivsufsort -ldivsufsort64
 
-bidir_search_fwd.o: $(USER_DIR)/bidir_search_fwd.cpp $(VBWT_HEADERS)/bwt_search.h $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) -I $(SDSL_HEADERS) -I $(VBWT_HEADERS) -I $(BOOST_HEADERS) -L $(LIBS) -c $(USER_DIR)/bidir_search_fwd.cpp -lsdsl -ldivsufsort -ldivsufsort64
+#bidir_search_fwd.o: $(USER_DIR)/bidir_search_fwd.cpp $(VBWT_HEADERS)/bwt_search.h $(GTEST_HEADERS)
+#	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) -I $(SDSL_HEADERS) -I $(VBWT_HEADERS) -I $(BOOST_HEADERS) -L $(LIBS) -c $(USER_DIR)/bidir_search_fwd.cpp -lsdsl -ldivsufsort -ldivsufsort64
 
 precalc_kmer_matches.o: $(USER_DIR)/precalc_kmer_matches.cpp $(VBWT_HEADERS)/bwt_search.h $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) -I $(SDSL_HEADERS) -I $(VBWT_HEADERS) -I $(BOOST_HEADERS) -L $(LIBS) -c $(USER_DIR)/precalc_kmer_matches.cpp -lsdsl -ldivsufsort -ldivsufsort64
@@ -116,7 +117,7 @@ sitemarker.o: $(USER_DIR)/sitemarker.cpp $(VBWT_HEADERS)/sitemarker.hpp  $(GTEST
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) -I $(VBWT_HEADERS) -I $(BOOST_HEADERS) -L $(LIBS) -c $(USER_DIR)/sitemarker.cpp
 
 
-vBWT: sitemarker.o bidir_search.o skip.o get_location.o bidir_search_bwd.o bidir_search_fwd.o precalc_kmer_matches.o parse_masks.o csa_construction.o map.o 
+vBWT: sitemarker.o bidir_search.o skip.o get_location.o bidir_search_bwd.o precalc_kmer_matches.o parse_masks.o csa_construction.o map.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) -I $(SDSL_HEADERS) -I $(VBWT_HEADERS) -I $(BOOST_HEADERS) -L $(LIBS) -L $(LIBS2) $^ -o $@ -lsdsl -ldivsufsort -ldivsufsort64 -lhts -lz
 
 #Bwt_search.o : $(USER_DIR)/bwt_search.cpp $(USER_DIR)/bwt_search.h libsdsl.a $(GTEST_HEADERS)
@@ -125,5 +126,5 @@ vBWT: sitemarker.o bidir_search.o skip.o get_location.o bidir_search_bwd.o bidir
 unittest_bidir_search_bwd_fwd.o : $(USER_DIR)/test/unittest_bidir_search_bwd_fwd.cpp $(VBWT_HEADERS)/bwt_search.h $(VBWT_HEADERS)/sitemarker.hpp $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I $(SDSL_HEADERS) -I $(VBWT_HEADERS) -I $(BOOST_HEADERS) -c $(USER_DIR)/test/unittest_bidir_search_bwd_fwd.cpp
 
-unittest_bidir_search_bwd_fwd : sitemarker.o bidir_search.o skip.o get_location.o csa_construction.o bidir_search_bwd.o bidir_search_fwd.o unittest_bidir_search_bwd_fwd.o 
+unittest_bidir_search_bwd_fwd : sitemarker.o bidir_search.o skip.o get_location.o csa_construction.o bidir_search_bwd.o unittest_bidir_search_bwd_fwd.o 
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(EXTRAFLAGS) -I $(SDSL_HEADERS) -I $(VBWT_HEADERS) -L$(GTEST_DIR) -L $(LIBS) $^ -o $@ -lsdsl -ldivsufsort -ldivsufsort64 -lgtest -lpthread
