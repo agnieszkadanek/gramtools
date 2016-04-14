@@ -10,7 +10,7 @@
 using namespace sdsl;
 using namespace std;
 
-string test_file,q,test_file2,query,mask_file;
+string test_file,q,test_file2,query,mask_file,alleles_file;
 std::vector<uint8_t> p;
 std::vector<std::vector<int>> covgs;
 string prg,prg2;
@@ -412,7 +412,7 @@ TEST(BackwardSearchTest, One_match_many_sites){
 
   interval_list sa_intervals, sa_intervals_rev;
   interval_list::iterator it;
-  SiteMarkerArray * prg_sites = new SiteMarkerArray(std::string(zahara1));
+  SiteMarkerArray * prg_sites = new SiteMarkerArray(std::string(alleles_file));
   SiteOverlapTracker* reusable_tracker = new SiteOverlapTracker();//used for bidir search  
   
   std::list<std::vector<std::pair<uint32_t, std::vector<int>>>> sites;
@@ -426,12 +426,12 @@ TEST(BackwardSearchTest, One_match_many_sites){
        if (q[i]=='T' or q[i]=='t') p.push_back(4);
   }
 
-  res_it = bidir_search_bwd(csa,0,csa.size(),
-			    0,csa.size(),
-			    p.begin(),p.end(), 
-			    sa_intervals,sa_intervals_rev,
-			    reusable_tracker, prg_sites,
-			    mask_a,16,first_del);
+  bidir_search_bwd(csa,0,csa.size(),
+		   0,csa.size(),
+		   p.begin(),p.end(), 
+		   sa_intervals,sa_intervals_rev,
+		   reusable_tracker, prg_sites,
+		   mask_a,16,first_del);
   uint64_t no_occ=0;
   for (it=sa_intervals.begin();it!=sa_intervals.end();++it) 
     no_occ+=(*it).second-(*it).first;
@@ -445,10 +445,18 @@ TEST(BackwardSearchTest, One_match_many_sites){
   sites.clear();
 
   csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_rev=csa_constr(test_file2,covgs, "int_alphabet_file","memory_log_file","csa_file",false);
-  first_del=false;
-  res_it=bidir_search_fwd(csa_rev,0,csa_rev.size(),0,csa_rev.size(),p.begin(),p.end(), sa_intervals,sa_intervals_rev,sites,mask_a,16,first_del);  
 
-  /* debug zam  no_occ=0;
+  first_del=false;
+
+  /* debug zam 
+  bidir_search_fwd(csa_rev,0,
+		   csa_rev.size(),0,csa_rev.size(),
+		   p.begin(),p.end(), 
+		   sa_intervals,sa_intervals_rev,
+		   reusable_tracker, prg_sites,
+		   mask_a,16,first_del);  
+
+ no_occ=0;
   for (it=sa_intervals.begin();it!=sa_intervals.end();++it)
     no_occ+=(*it).second-(*it).first;
 
@@ -496,6 +504,9 @@ int main(int argc, char **argv) {
 
   int a;
   while (g>>a) mask_a.push_back(a);
+
+  alleles_file=argv[5];
+  
 
   return RUN_ALL_TESTS();
 }

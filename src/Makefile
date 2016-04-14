@@ -32,8 +32,8 @@ EXTRAFLAGS += -O0
 
 # All tests produced by this Makefile.  Remember to add new tests you
 # created to the list.
-#TESTS = unittest_bidir_search_bwd_fwd vBWT
-TESTS = vBWT
+TESTS = unittest_bidir_search_bwd_fwd vBWT
+#TESTS = vBWT
 
 # All Google Test headers.  Usually you shouldn't change this
 # definition.
