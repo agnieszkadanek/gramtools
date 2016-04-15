@@ -138,7 +138,7 @@ int SiteMarkerArray::get_num_sites()
 
 
 
-SiteOverlapTracker::SiteOverlapTracker()
+SiteOverlapTracker::SiteOverlapTracker():valid(true)
 {
   vec.reserve(100);
 }
@@ -155,7 +155,21 @@ void SiteOverlapTracker::push(int site_id, int allele, SiteMarkerArray* sma)
 
 void SiteOverlapTracker::clear()
 {
+  valid=true;
   vec.clear();
+}
+
+
+
+boolean SiteOverlapTracker::is_valid()
+{
+  return valid;
+
+}
+
+boolean SiteOverlapTracker::invalidate()
+{
+  valid=false;
 }
 
 /*
