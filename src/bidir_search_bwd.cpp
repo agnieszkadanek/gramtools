@@ -31,7 +31,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   uint64_t left_new, right_new, left_rev_new, right_rev_new;
   std::vector<std::pair<uint64_t,uint64_t>> res;   
   uint64_t init_list_size,j;
-  SiteOverlapTracker* empty_tracker = new SiteTracker;//zahara- is ok?
+  SiteOverlapTracker* empty_tracker = new SiteTracker();
   assert(left<right);
   assert(right<=csa.size());
 
