@@ -5,7 +5,7 @@
 #include <boost/dynamic_bitset.hpp>
 
 
-//note the number of alleles is not stored explicitly, can get via the alleles member data
+/*
 class SiteMarker
 {
 public:
@@ -29,44 +29,63 @@ public:
   void print_all_info();
 
 private:
-  boost::dynamic_bitset<> alleles;  
+
 
 
 };
 
+*/
 
 //this object gets allocated once - parse a file containing one line per alpha
 // the sites vector has alphabet+1 entries. at index 0,1,2,3,4 - just have NULL pointers or something
 // then you index each site with the number it has in the linPRG. 
-class SiteMarkerArray
+class SiteInfo
 {
 public:
-  SiteMarkerArray(std::string sitefile);
-  ~SiteMarkerArray();
+  SiteInfo(std::string sitefile);
+  ~SiteInfo();
   
   //suppose you want to get a pointer to the SiteMarker for site 56
   //and at the same time set alleles 1,5,6 to 1 (meaning this read overlaps alleles 1,5,6:
   //note this will zero all other bits.
-  SiteMarker* get_site_and_set_allele(int site_id, int allele);
-  int get_num_sites();
-  
+  uint32_t get_num_alleles(uint32_t site_id);
+  uint32_t get_num_sites();
 private:
-  std::vector<SiteMarker*> sites;
+  std::vector<uint32_t> allele_counts;
   int num_sites;//literally the number of sites, nothing to do with int-alphabet/even/odd stuff
 };
+
+
+
   
 
+
+
+
 //what is the thing we use when tracking which sites/alleles a read crosses?
+//we will have one of these per interval
 class SiteOverlapTracker
 {
 public:
-  SiteOverlapTracker();
-  void push(int site_id, int allele, SiteMarkerArray* sma);
+  SiteOverlapTracker(): valid(true),
+			alleles(2, boost::dynamic_bitset<>(2));//by default, 2 sites each with 2 alleles
+  void push(int site_id, int allele, SiteInfo* si);
   void clear();
-  std::vector<SiteMarker*> vec;
+  boolean is_valid();
+  void invalidate();
+private:
+  boolean valid;
+  std::vector<uint32_t> sites;
+  std::vector<boost::dynamic_bitset<>> alleles;  
 };
 
 
+class SiteOverlapTrackerArray
+{
+public:
+  std::vector<SiteOverlapTracker*> site_trackers;
+  uint32_t get_next(uint32_t current_inde);
+};
 
 
 #endif

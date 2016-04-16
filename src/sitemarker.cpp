@@ -8,73 +8,10 @@
 #include <algorithm>
 #include <fstream>
 
-//using namespace std;
-
-
-
-void SiteMarker::zero_all_alleles()
-{
-  alleles.reset();
-}
-
-void SiteMarker::set_allele(uint32_t i)
-{
-  if (i<alleles.size())
-    {
-      alleles[i]=1;
-    }
-}
-
-
-int SiteMarker::count_set_alleles()
-{
-  uint32_t i;
-  int count=0;
-  for (i=0; i<alleles.size(); i++)
-    {
-      if (alleles[i]==1)
-	{
-	  count++;
-	}
-    }
-  return count;
-}
-
-
-
-void SiteMarker::set_these_alleles(std::vector<int> v)
-{
-  for (uint32_t i : v)
-    {
-      set_allele(i);
-    }
-}
-
-int SiteMarker::get_num_alleles()
-{
-  return alleles.size();
-}
-
-int SiteMarker::get_allele_bit(uint32_t i)
-{
-  return alleles[i];
-}
-
-void SiteMarker::print_all_info()
-{
-  printf("Marker, site id %d, odd-id %d:\n", site_index, int_alphabet_odd_id);
-  printf("Bits are: \n");
-  uint32_t i;
-  for (i=0; i<alleles.size(); i++)
-    {
-      printf("%d", int(alleles[i]));
-    }
-  printf("\n");
-}
 
 //pass in a file which has one column
 //the i-th row = number of alleles in i-th site.
-SiteMarkerArray::SiteMarkerArray(std::string sitefile)
+SiteInfo::SiteInfo(std::string sitefile)
 {
   //count lines in file so know how much to alloc
   std::ifstream inFile(sitefile); 
@@ -82,42 +19,24 @@ SiteMarkerArray::SiteMarkerArray(std::string sitefile)
 			 std::istreambuf_iterator<char>(), '\n');
   inFile.close();
   printf("Found %d sites\n", num_sites);
+
   //collect info on how many alleles in each site from input file
-  std::vector<int> num_alleles_in_each_site;
-  num_alleles_in_each_site.reserve(num_sites);
+  allele_counts.reserve(num_sites);
 
   std::ifstream fs(sitefile);
   int i=0;
   for(std::string line; std::getline(fs, line); )
     {
-      num_alleles_in_each_site.push_back(stoi(line));
+      allele_counts.push_back(stoi(line));
       i++;
     }
-  
-  //we now know how many sites there are and how many alleles for each
-
-
-  //alloc enoough memory
-  sites.reserve(num_sites);
-  i=0;
-  for (int num : num_alleles_in_each_site)
-    {
-      int odd_id = 2*i+5;
-      sites[i]=new SiteMarker(odd_id, num);
-      i++;
-    }
-  
 }
 
-SiteMarkerArray::~SiteMarkerArray()
+SiteInfo::~SiteInfo()
 {
-  for (int i=0; i< num_sites; i++)
-    {
-      delete sites[i];
-    }  
 }
 
-SiteMarker* SiteMarkerArray::get_site_and_set_allele(int site_id, int allele)
+uint32_t SiteInfo::get_num_alleles(uint32_t site_id)
 {
   if (site_id>num_sites-1)
     {
@@ -125,38 +44,47 @@ SiteMarker* SiteMarkerArray::get_site_and_set_allele(int site_id, int allele)
 	     site_id, num_sites-1);
       exit(1);
     }
-  SiteMarker* s = sites[site_id];
-  s->set_allele(allele);
-  return s;
+  return allele_counts[site_id];
 }
 
-int SiteMarkerArray::get_num_sites()
+uint32_t SiteInfo::get_num_sites()
 {
   return num_sites;
 }
 
 
-
-
-SiteOverlapTracker::SiteOverlapTracker():valid(true)
+SiteOverlapTracker::SiteOverlapTracker():valid(true),
+					 alleles(2, boost::dynamic_bitset<>(2))
 {
-  vec.reserve(100);
+  sites.reserve(2);
 }
 
-void SiteOverlapTracker::push(int site_id, int allele, SiteMarkerArray* sma)
+void SiteOverlapTracker::push(uint32_t site_id, int allele, SiteInfo* si)
 {
-  
-  if ((vec.size()>0) && (site_id==vec.back()->site_index))
-      vec.back()->set_allele(allele);
-  else
-    vec.push_back(sma->get_site_and_set_allele(site_id, allele));
+  if ((sites.size()>0) && (site_id==sites.back()))
+    {
+      alleles.back()[allele]=1;//flick the bit for this allele
+    }
+  else//either no sites at all yet or a new site
+    {
+      sites.push_back(site_id);
+      uint32_t num = si->get_num_alleles();
+      if (allele>num)
+	{
+	  printf("Trying to modify an allele with out of bounds index\n");
+	  exit(1);
+	}
+      alleles.push_back(boost::dynamic_bitset<>(num) );
+      alleles.back()[allele]=1;
+    }
 }
 
 
 void SiteOverlapTracker::clear()
 {
   valid=true;
-  vec.clear();
+  sites.clear();
+  alleles.clear();
 }
 
 
@@ -172,52 +100,17 @@ boolean SiteOverlapTracker::invalidate()
   valid=false;
 }
 
-/*
-int main()
+SiteOverlapTrackerArray::SiteOverlapTrackerArray()
 {
-  // compile thus:
-  // g++ -g -O0 -std=c++11 -I /data2/apps/boost_1_60_0/ -Wall -o zam sitemarker.cpp
-
-
-
-  //set up the structure that mirrors the PRG sites:
-  SiteMarkerArray* sma = new SiteMarkerArray(std::string("test/testmarkers"));
-
-  SiteOverlapTracker* tracker = new SiteOverlapTracker(sma);
-
-  //fake some data
-  tracker->push(0,1);
-  tracker->push(1,2);
-  tracker->push(2,1);
-  tracker->push(3,4);
-  tracker->push(4,21);
-  
-
-  //now let's take a look.
-  
-  for (SiteMarker* v : tracker->vec)
-    {
-      v->print_all_info();
-    }
-  
-  // this is what you see 
-
-//  Marker, site id 0, odd-id 5:
-//  Bits are: 
-//  01
-//  Marker, site id 1, odd-id 7:
-//  Bits are: 
-//  001
-//  Marker, site id 2, odd-id 9:
-//  Bits are: 
-//  0100
-//  Marker, site id 3, odd-id 11:
-//  Bits are: 
-//  00001
-//  Marker, site id 4, odd-id 13:
-//  Bits are: 
-//  000000000000000000000100000000
-
-  return 1;
+  site_trackers.reserve(10000);
 }
-*/
+
+SiteOverlapTrackerArray::get_next(uint32_t current_index)
+{
+  uint32_t i = current_index;
+  do
+    {
+      i++;
+    }  while (site_trackers[i].is_valid()==false);
+  return i;
+}
