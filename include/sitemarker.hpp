@@ -69,6 +69,7 @@ class SiteOverlapTracker
 public:
   SiteOverlapTracker(): valid(true),
 			alleles(2, boost::dynamic_bitset<>(2));//by default, 2 sites each with 2 alleles
+  SiteOverlapTracker(const SiteOverlapTracker&);
   void push(int site_id, int allele, SiteInfo* si);
   void clear();
   boolean is_valid();

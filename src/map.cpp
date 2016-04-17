@@ -37,14 +37,14 @@ int main(int argc, char* argv[]) {
 	std::ofstream out(argv[6]); 
 	std::ofstream out2(argv[7]);
 
-	SiteMarkerArray * prg_sites = new SiteMarkerArray(std::string(argv[12]));
-	SiteOverlapTracker* reusable_tracker = new SiteOverlapTracker();//used for bidir search
-
 	//associative array, key->value are kmer->BWT interval
 	sequence_map<std::vector<uint8_t>, interval_list> kmer_idx,kmer_idx_rev;
 
-	//to accelerate mapping will keep info on kmer->BWT interval and kmer->site overlap tracking info
-	//note this structure is **NOT** threadsafe - we are sharing these SiteMarker objects and flicking bits
+	//to accelerate mapping will keep info 
+	//on kmer->BWT interval and kmer->site overlap tracking info
+
+	std::vector<SiteOverlapTracker> kmer_tracker_array;
+	kmer-tracker_array.reserve(10000);
 	SiteOverlapTracker* kmer_tracker_array =  new SiteOverlapTracker[atoi(argv[13])];
 	//assoc array, key-> value are kmer->index of corresponding tracker in the kmer_tracker_array
 	sequence_map<std::vector<uint8_t>, uint32_t> kmer_to_tracker_index;

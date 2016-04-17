@@ -32,7 +32,7 @@ template < typename SEQUENCE >
 using sequence_set = std::unordered_set< SEQUENCE, seq_hash<SEQUENCE> > ;
 
 
-typedef std::list<std::pair<uint64_t,uint64_t>> interval_list;
+typedef std::vector<std::pair<uint64_t,uint64_t>> interval_list;
 
 csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_constr(std::string fname, std::vector<std::vector<int>>& covgs, char* int_al_fname, char* memory_log_fname, char* csa_file, bool fwd);
 
@@ -58,9 +58,8 @@ uint64_t bidir_search(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 		  uint64_t num_idx,
 		  uint32_t num, bool last,
-		  std::vector<int> mask_a,
-		  SiteOverlapTracker* tracker,
-		  SiteMarkerArray* prg_sites);
+		  std::vector<int>& mask_a,
+		  std::vector<SiteOverlapTracker>::iterator& it_s);
 
 bool skip(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
                       uint64_t& left, uint64_t& right,

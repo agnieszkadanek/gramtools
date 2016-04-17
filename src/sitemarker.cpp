@@ -59,8 +59,21 @@ SiteOverlapTracker::SiteOverlapTracker():valid(true),
   sites.reserve(2);
 }
 
+SiteOverlapTracker::SiteOverlapTracker(const SiteOverlapTracker& from):
+					 
+{
+  valid=from.valid;
+  sites=from.sites;
+  alleles=from.alleles;
+}
+
+
+
 void SiteOverlapTracker::push(uint32_t site_id, int allele, SiteInfo* si)
 {
+  if (valid==false)
+    return;
+
   if ((sites.size()>0) && (site_id==sites.back()))
     {
       alleles.back()[allele]=1;//flick the bit for this allele
