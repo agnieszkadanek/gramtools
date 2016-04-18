@@ -37,15 +37,12 @@ int main(int argc, char* argv[]) {
 	std::ofstream out(argv[6]); 
 	std::ofstream out2(argv[7]);
 
-	//associative array, key->value are kmer->BWT interval
-	sequence_map<std::vector<uint8_t>, interval_list> kmer_idx,kmer_idx_rev;
-
-	//to accelerate mapping will keep info 
-	//on kmer->BWT interval and kmer->site overlap tracking info
+	//associative array, key->value are kmer->list of BWT intervals
+	sequence_map<std::vector<uint8_t>, interval_list> kmer_sa_intervals,kmer_sa_intervals_rev;
 
 	std::vector<SiteOverlapTracker> kmer_tracker_array;
-	kmer-tracker_array.reserve(10000);
-	SiteOverlapTracker* kmer_tracker_array =  new SiteOverlapTracker[atoi(argv[13])];
+	kmer_tracker_array.reserve(atoi(argv[13]));
+
 	//assoc array, key-> value are kmer->index of corresponding tracker in the kmer_tracker_array
 	sequence_map<std::vector<uint8_t>, uint32_t> kmer_to_tracker_index;
 
@@ -68,13 +65,13 @@ int main(int argc, char* argv[]) {
 
 	int k=atoi(argv[10]); //verify input
 	precalc_kmer_matches(csa,k,
-			     kmer_idx,kmer_idx_rev,			     
-			     kmer_tracker_array, prg_sites, kmer_to_tracker_index,
+			     kmer_sa_intervals,kmer_sa_intervals_rev,			     
+			     it_k, //zaharakmer_tracker_array, prg_sites, kmer_to_tracker_index,
 			     mask_a,maxx,kmers_in_ref,argv[11]);
 	timestamp();
 
-	interval_list sa_intervals, sa_intervals_rev;
-	interval_list::iterator it, it_rev;
+	interval_list sa_intervals, sa_intervals_rev, temp;
+	interval_list::iterator it, it_rev, it_temp;
 	//std::list<std::vector<std::pair<uint32_t, std::vector<int>>>> sites;//this is now a tracker
 	std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>::iterator it_s;
 	std::vector<uint8_t>::iterator res_it;
@@ -82,7 +79,6 @@ int main(int argc, char* argv[]) {
 	for (auto q: inputReads)
 	{
 		// If you declare p inside the while scope, it is destroyed/created automatically in every loop
-
 		std::vector<uint8_t> p;
 
 		//logging
@@ -98,11 +94,11 @@ int main(int argc, char* argv[]) {
 		}
 
 		std::vector<uint8_t> kmer(p.begin()+p.size()-k,p.end()); //is there a way to avoid making this copy?
-		if (kmer_idx.find(kmer)!=kmer_idx.end() && 
-		    kmer_idx_rev.find(kmer)!=kmer_idx_rev.end() && 
+		if (kmer_sa_intervals.find(kmer)!=kmer_sa_intervals.end() && 
+		    kmer_sa_intervals_rev.find(kmer)!=kmer_sa_intervals_rev.end() && 
 		    kmer_to_tracker_index.find(kmer)!=kmer_to_tracker_index.end()) {
-		  sa_intervals=kmer_idx[kmer];
-		  sa_intervals_rev=kmer_idx_rev[kmer];
+		  sa_intervals=kmer_sa_intervals[kmer];
+		  sa_intervals_rev=kmer_sa_intervals_rev[kmer];
 		  //sites=kmer_sites[kmer];	
 
 		  reusable_tracker->vec = kmer_tracker_array[kmer_to_tracker_index[kmer]].vec;

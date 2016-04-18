@@ -37,15 +37,13 @@ typedef std::vector<std::pair<uint64_t,uint64_t>> interval_list;
 csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_constr(std::string fname, std::vector<std::vector<int>>& covgs, char* int_al_fname, char* memory_log_fname, char* csa_file, bool fwd);
 
 void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa, int k,   
-			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_idx, 
-			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_idx_rev,
-			   SiteOverlapTracker* global_tracker_array,//prealloced array
-			   SiteMarkerArray * prg_sites,
-			   sequence_map<std::vector<uint8_t>, uint32_t>& kmer_to_tracker_index,
+			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval, //proper (nonzero)
+			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval_rev,
+			   std::vector<SiteOverlapTracker>& site_trackers,//one per proper (nonempty) interval
+			   std::vector<SiteOverlapTracker>& site_trackers_temp,//one per interval
+			   sequence_map<std::vector<uint8_t>, uint32_t>& kmer_index,//which-th kmer is it
 			   std::vector<int> mask_a, uint64_t maxx, 
-			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile);
-
-
+			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile); 
 
 uint64_t parse_masks(std::vector<uint64_t>& mask_s, std::vector<int>& mask_a, std::string sites_fname, std::string alleles_fname, std::vector<std::vector<int>>& covgs);
 
@@ -73,12 +71,12 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						std::vector<uint8_t>::iterator pat_end,
 						interval_list& sa_intervals, 
 						interval_list& sa_intervals_rev,
-						SiteOverlapTracker* tracker,
-						SiteMarkerArray * prg_sites,
+						interval_list& sa_intervals_temp, 
+						interval_list& sa_intervals_rev_temp,
+						std::vector<SiteOverlapTracker>& site_trackers,//one per interval, pre-reserved
+						std::vector<SiteOverlapTracker>& site_trackers_temp,
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						);
-
-
 
 std::vector<uint8_t>::iterator bidir_search_fwd(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 						uint64_t left, uint64_t right,

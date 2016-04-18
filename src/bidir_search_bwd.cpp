@@ -21,8 +21,6 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals_rev_temp,
 						std::vector<SiteOverlapTracker>& site_trackers,//one per interval, pre-reserved
 						std::vector<SiteOverlapTracker>& site_trackers_temp,
-						//std::vector<uint32_t> flags, //flag set to 1 to mark bad interval
-						SiteInfo * s_info,
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						)
 {
@@ -151,7 +149,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
     it=sa_intervals_temp.begin();
     it_rev=sa_intervals_rev_temp.begin();	
     it_s = site_trackers_temp.begin();
-
+    count=0;//count increments when we find an interval with length>0
     while (it!=sa_intervals.end() && 
 	   it_rev!=sa_intervals_rev.end() ) {	
       //calculate sum to return- can do this in top fcns
@@ -159,11 +157,14 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 		       (*it_rev).first,(*it_rev).second,
 		       c)>0) 
 	{
+	  //found an interval length>0, so store in final data structure
+	  sa_intervals[count]= *it;
+	  sa_intervals_rev[count]= *it_rev;
+	  site_trackers[count]=*it_s
+	  count++;
 	  ++it;
 	  ++it_rev;
 	  ++it_s;
-	  ++it_flag;
-	  count++;
 	}
       else 
 	{
@@ -182,19 +183,6 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   }
 
   
-  //now just keep the valid intervals
-  auto valid_interval = [](std::pair<uint64_t x,uint64_t y>) { return y>x; };
-  
-  std::copy_if(sa_intervals_temp.begin(), sa_intervals_temp.end(), 
-	       sa_intervals.begin(),  
-	       valid_interval );
-  std::copy_if(sa_intervals_rev_temp.begin(), sa_intervals_rev_temp.end(), 
-	       sa_intervals_rev.begin(),  
-	       valid_interval );
-  std::copy_if(site_trackers_temp.begin(), site_trackers_temp.end(), 
-	       site_trackers.begin(),  
-	       valid_interval );
-
   
   if (pat_it!=pat_begin) return(pat_it); // where it got stuck
   else {
