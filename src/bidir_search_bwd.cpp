@@ -17,8 +17,11 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						std::vector<uint8_t>::iterator pat_end,
 						interval_list& sa_intervals, 
 						interval_list& sa_intervals_rev,
+						interval_list& sa_intervals_temp, 
+						interval_list& sa_intervals_rev_temp,
 						std::vector<SiteOverlapTracker>& site_trackers,//one per interval, pre-reserved
-						std::vector<uint32_t> flags, //flag set to 1 to mark bad interval
+						std::vector<SiteOverlapTracker>& site_trackers_temp,
+						//std::vector<uint32_t> flags, //flag set to 1 to mark bad interval
 						SiteInfo * s_info,
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						)
@@ -41,33 +44,26 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   assert(left<right);
   assert(right<=csa.size());
 
-  if (sa_intervals.empty()) {
-    sa_intervals[0]={left, right};
-    //sa_intervals.push_back(std::make_pair(left,right));
-    sa_intervals_rev[0] = {left_rev, right_rev};
-    //sa_intervals_rev.push_back(std::make_pair(left_rev,right_rev));
-    site_trackers[0]=empty_tracker;
+  if (sa_intervals_temp.empty()) {
+    sa_intervals_temp[0]={left, right};
+    sa_intervals_rev_temp[0] = {left_rev, right_rev};
+    site_trackers_temp[0]=empty_tracker;
     count++;
   }
   int k=0;
-  while (pat_it>pat_begin && !sa_intervals.empty()) {
+  while (pat_it>pat_begin && !sa_intervals_temp.empty()) {
     --pat_it;
     c=*pat_it;
 
-    assert(sa_intervals.size()==sa_intervals_rev.size());
-    assert(sa_intervals.size()==site_trackers.size());//each interval has a corresponding vector of sites/alleles crossed; what about the first interval? (corresp to matches in the ref)
+    assert(sa_intervals_temp.size()==sa_intervals_rev_temp.size());
+    assert(sa_intervals_temp.size()==site_trackers_temp.size());//each interval has a corresponding vector of sites/alleles crossed; what about the first interval? (corresp to matches in the ref)
 
-    it=sa_intervals.begin();
-    it_rev=sa_intervals_rev.begin();
-    it_s=site_trackers.begin();
-    it_flag=flags.begin();
-    while ((*it_flag)==1)
-      {
-	count++;
-      }
+    it=sa_intervals_temp.begin();
+    it_rev=sa_intervals_rev_temp.begin();
+    it_s=site_trackers_temp.begin();
 
     
-    init_list_size=sa_intervals.size();
+    init_list_size=sa_intervals_temp.size();
     j=0;
 
     if (pat_it!=pat_end-1) {
@@ -105,42 +101,37 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
  	  last=skip(csa,left_new,right_new,left_rev_new,right_rev_new,num);
 	
 	  // how to alternate between forward and backward?
-	  if (it==sa_intervals.begin() && 
+	  if (it==sa_intervals_temp.begin() && 
 	      first_del==false && 
 	      !ignore) 
 	    {
 	      // this is the first site that the read overlaps
 	      // push new tracker onto list of trackers (new interval=> new tracker)
 	      //except we pushed the ne tracker above
-	      sa_intervals[count]={left_new, right_new};
+	      sa_intervals_temp[count]={left_new, right_new};
 	      //sa_intervals.push_back(std::make_pair(left_new,right_new));
-	      sa_intervals_rev[count]={left_rev_new, right_rev_new};
+	      sa_intervals_rev_temp[count]={left_rev_new, right_rev_new};
 	      //sa_intervals_rev.push_back(std::make_pair(left_rev_new,right_rev_new));
-	      get_location(csa,i,num,last, 
-			   mask_a, it_s); 
+	      get_location(csa,i,num,last, mask_a, it_s); 
 	    }
 	  //there will be entries with pair.second empty (corresp to allele) coming from crossing the last marker
 	  //can delete them here or in top a fcn when calculating coverages
 	  else {
 	    if (ignore) 
 	      {
-		//second allele boundary crosses within one site - modify bits of tracker
+		//second (or third or..) allele boundary crossed within one site - modify bits of tracker
 		if (num%2==0)
 		  {
-		    get_location(csa,i,num,last, 
-				 mask_a, it_s);
+		    get_location(csa,i,num,last, mask_a, it_s);
 		  }
 		//else ?
 	      }
 	    else {
 	      
-	      //read crossing a second site - push back on tracker - new site
+	      //read crossing a new site - push back on tracker 
 	      *it={left_new, right_new}; //std::make_pair(left_new,right_new);
 	      *it_rev={left_rev_new, right_rev_new}; //std::make_pair(left_rev_new,right_rev_new);
-	      get_location(csa,i,num,last, 
-			   mask_a, it_s);
-
-
+	      get_location(csa,i,num,last, mask_a, it_s);
 	    }
 	  }
 	  prev_num=num;  
@@ -154,22 +145,12 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
       }
     }
     
-    assert(sa_intervals.size()==sa_intervals_rev.size());
-    if (tracker != NULL)
-      {
-	assert(sa_intervals.size()==tracker.vec.size());
-      }
-    it=sa_intervals.begin();
-    it_rev=sa_intervals_rev.begin();	
-    it_s = site_trackers.begin();
-    it_flag=flags.begin();
-    while (*it_flag==1)
-      {
-	++it;
-	++it_rev;
-	++it_s;
-	++it_flag;
-      }
+    assert(sa_intervals_temp.size()==sa_intervals_rev_temp.size());
+    assert(sa_intervals_temp.size()==site_trackers_temp.size());
+
+    it=sa_intervals_temp.begin();
+    it_rev=sa_intervals_rev_temp.begin();	
+    it_s = site_trackers_temp.begin();
 
     while (it!=sa_intervals.end() && 
 	   it_rev!=sa_intervals_rev.end() ) {	
@@ -182,10 +163,11 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  ++it_rev;
 	  ++it_s;
 	  ++it_flag;
+	  count++;
 	}
       else 
 	{
-	  if (it==sa_intervals.begin()) 
+	  if (it==sa_intervals_temp.begin()) 
 	    {
 	      first_del=true;
 	    }
@@ -193,13 +175,26 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  //top fcns to check if there are 
 	  //matches in the reference
 	  //it=sa_intervals.erase(it);
-	  (*it_flag)=1;
 	  //it_rev=sa_intervals_rev.erase(it_rev);
 	  //it_s=sites.erase(it_s);
-	  (*it_s).invalidate();
 	}
     }
   }
+
+  
+  //now just keep the valid intervals
+  auto valid_interval = [](std::pair<uint64_t x,uint64_t y>) { return y>x; };
+  
+  std::copy_if(sa_intervals_temp.begin(), sa_intervals_temp.end(), 
+	       sa_intervals.begin(),  
+	       valid_interval );
+  std::copy_if(sa_intervals_rev_temp.begin(), sa_intervals_rev_temp.end(), 
+	       sa_intervals_rev.begin(),  
+	       valid_interval );
+  std::copy_if(site_trackers_temp.begin(), site_trackers_temp.end(), 
+	       site_trackers.begin(),  
+	       valid_interval );
+
   
   if (pat_it!=pat_begin) return(pat_it); // where it got stuck
   else {
