@@ -410,12 +410,17 @@ TEST(BackwardSearchTest, One_match_many_sites){
   csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa
     =csa_constr(test_file2,covgs, "int_alphabet_file","memory_log_file","csa_file",true);
 
-  interval_list sa_intervals, sa_intervals_rev;
-  interval_list::iterator it;
-  SiteMarkerArray * prg_sites = new SiteMarkerArray(std::string(alleles_file));
-  SiteOverlapTracker* reusable_tracker = new SiteOverlapTracker();//used for bidir search  
-  
-  std::list<std::vector<std::pair<uint32_t, std::vector<int>>>> sites;
+  SiteInfo* si = new SiteInfo(std::string(alleles_file));
+  interval_list sa_intervals, sa_intervals_rev,temp, temp_rev;
+  sa_intervals.reserve(20);
+  sa_intervals_rev.reserve(20);
+  temp.reserve(20);
+  temp_rev.reserve(20);
+
+  interval_list::iterator it, it_rev;
+  site_tracker_list site_trackers, site_trackers_temp;
+  site_trackers.reserve(20);
+  site_trackers_temp.reserve(20);
   bool first_del=false;
 
   q=query;
@@ -430,8 +435,9 @@ TEST(BackwardSearchTest, One_match_many_sites){
 		   0,csa.size(),
 		   p.begin(),p.end(), 
 		   sa_intervals,sa_intervals_rev,
-		   reusable_tracker, prg_sites,
-		   mask_a,16,first_del);
+		   temp, temp_rev,
+		   site_trackers, site_trackers_temp,
+		   mask_a,16,first_del, si);
   uint64_t no_occ=0;
   for (it=sa_intervals.begin();it!=sa_intervals.end();++it) 
     no_occ+=(*it).second-(*it).first;
@@ -439,15 +445,14 @@ TEST(BackwardSearchTest, One_match_many_sites){
   EXPECT_EQ(true,first_del);
   EXPECT_EQ(1,sa_intervals.size());
   EXPECT_EQ(no_occ,1);
-  EXPECT_EQ(reusable_tracker->vec.size(),5);
-  EXPECT_EQ(reusable_tracker->vec[0]->count_set_alleles(),0);
-  EXPECT_EQ(reusable_tracker->vec[1]->count_set_alleles(),0);
-  EXPECT_EQ(reusable_tracker->vec[2]->count_set_alleles(),0);
-  EXPECT_EQ(reusable_tracker->vec[3]->count_set_alleles(),0);
-  EXPECT_EQ(reusable_tracker->vec[4]->count_set_alleles(),0);
+  EXPECT_EQ(site_trackers.size(),1);
+  EXPECT_EQ(site_trackers[0].sites.size(),1);
+  //  EXPECT_EQ(site_trackers[0].alleles[0].count(),0);
   sa_intervals.clear();
   sa_intervals_rev.clear();
-  sites.clear();
+  temp.clear();
+  temp_rev.clear();
+  site_trackers.clear();
 
   csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_rev=csa_constr(test_file2,covgs, "int_alphabet_file","memory_log_file","csa_file",false);
 
@@ -471,7 +476,7 @@ TEST(BackwardSearchTest, One_match_many_sites){
   */
   sa_intervals.clear();
   sa_intervals_rev.clear();
-  sites.clear();
+
   p.clear();
 }
 

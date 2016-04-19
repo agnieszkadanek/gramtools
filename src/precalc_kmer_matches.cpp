@@ -9,7 +9,7 @@
 #include <utility>
 #include <boost/functional/hash.hpp>
 #include <fstream>
-
+#include "sitemarker.hpp"
 
 using namespace sdsl;
 
@@ -20,7 +20,8 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval_rev,
 			   sequence_map<std::vector<uint8_t>, site_tracker_list>& kmer_tracker,
 			   std::vector<int> mask_a, uint64_t maxx, 
-			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile) 
+			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile,
+			   SiteInfo* si) 
 {
   
   //set up some temporary lists for use during this function
@@ -58,11 +59,11 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
       std::vector<uint8_t>::iterator res_it=
 	bidir_search_bwd(csa,0,csa.size(),0,csa.size(),
 			 kmer.begin(),kmer.end(),
-			 kmer_sa_interval[kmer], kmer_sa_interval_rev[kmer]
+			 kmer_sa_interval[kmer], kmer_sa_interval_rev[kmer],
 			 temp, temp_rev,
 			 kmer_tracker[kmer],
 			 site_trackers_temp,
-			 mask_a,maxx,first_del);
+			 mask_a,maxx,first_del, si);
 
 
       if (!first_del) kmers_in_ref.insert(kmer);

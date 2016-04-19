@@ -37,13 +37,15 @@ int main(int argc, char* argv[]) {
   std::ofstream out(argv[6]); 
   std::ofstream out2(argv[7]);
   
+  SiteInfo* si = new SiteInfo(argv[12]);
+
   //associative array, key->value are kmer->list of BWT intervals
   sequence_map<std::vector<uint8_t>, interval_list> kmer_sa_intervals,kmer_sa_intervals_rev;
   kmer_sa_intervals.reserve(atoi(argv[13]));
   kmer_sa_intervals_rev.reserve(atoi(argv[13]));
   
   //assoc array, key-> value are kmer->list of site_overlap_trackers
-  sequence_map<std::vector<uint8_t>, uint32_t> kmer_to_trackerlist;
+  sequence_map<std::vector<uint8_t>, site_tracker_list> kmer_to_trackerlist;
   kmer_to_trackerlist.reserve(atoi(argv[13]));
   
   sequence_set<std::vector<uint8_t>> kmers_in_ref;
@@ -67,7 +69,7 @@ int main(int argc, char* argv[]) {
   precalc_kmer_matches(csa,k,
 		       kmer_sa_intervals,kmer_sa_intervals_rev,			     
 		       kmer_to_trackerlist,
-		       mask_a,maxx,kmers_in_ref,argv[11]);
+		       mask_a,maxx,kmers_in_ref,argv[11], si);
   timestamp();
   
   //setup variables for main bidirectional search
@@ -78,7 +80,7 @@ int main(int argc, char* argv[]) {
   temp.reserve(10000);
   temp_rev.reserve(10000);
   site_trackers.reserve(10000);
-  site_trackers_rev.reserve(10000);
+
 
   interval_list::iterator it, it_rev, it_temp;
   std::vector<uint8_t>::iterator res_it;
@@ -123,7 +125,7 @@ int main(int argc, char* argv[]) {
 				  sa_intervals, sa_intervals_rev, 
 				  temp, temp_rev,
 				  site_trackers, site_trackers_temp,
-				  mask_a, maxx, first_del);
+				  mask_a, maxx, first_del, si);
 	  
 	  no_occ=0;
 	  for (it=sa_intervals.begin();it!=sa_intervals.end();++it)
@@ -131,10 +133,10 @@ int main(int argc, char* argv[]) {
 	  
 	  sa_intervals.clear();
 	  sa_intervals_rev.clear();
-	  sa_intervals_temp.clear();
-	  sa_intervals_rev_temp.clear();
-	  site_trackers->clear();
-	  site_trackers_temp->clear();
+	  temp.clear();
+	  temp_rev.clear();
+	  site_trackers.clear();
+	  site_trackers_temp.clear();
 	}
       else 
 	{

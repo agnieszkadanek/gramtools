@@ -53,27 +53,14 @@ uint32_t SiteInfo::get_num_sites()
 }
 
 
-SiteOverlapTracker::SiteOverlapTracker():valid(true),
-					 alleles(2, boost::dynamic_bitset<>(2))
+SiteOverlapTracker::SiteOverlapTracker(const SiteOverlapTracker& from):sites(from.sites), alleles(from.alleles)					 
 {
-  sites.reserve(2);
-}
-
-SiteOverlapTracker::SiteOverlapTracker(const SiteOverlapTracker& from):
-					 
-{
-  valid=from.valid;
-  sites=from.sites;
-  alleles=from.alleles;
 }
 
 
 
-void SiteOverlapTracker::push(uint32_t site_id, int allele, SiteInfo* si)
+void SiteOverlapTracker::push(uint32_t site_id, uint32_t allele, SiteInfo* si)
 {
-  if (valid==false)
-    return;
-
   if ((sites.size()>0) && (site_id==sites.back()))
     {
       alleles.back()[allele]=1;//flick the bit for this allele
@@ -81,7 +68,7 @@ void SiteOverlapTracker::push(uint32_t site_id, int allele, SiteInfo* si)
   else//either no sites at all yet or a new site
     {
       sites.push_back(site_id);
-      uint32_t num = si->get_num_alleles();
+      uint32_t num = si->get_num_alleles(site_id);
       if (allele>num)
 	{
 	  printf("Trying to modify an allele with out of bounds index\n");
@@ -95,35 +82,7 @@ void SiteOverlapTracker::push(uint32_t site_id, int allele, SiteInfo* si)
 
 void SiteOverlapTracker::clear()
 {
-  valid=true;
   sites.clear();
   alleles.clear();
 }
 
-
-
-boolean SiteOverlapTracker::is_valid()
-{
-  return valid;
-
-}
-
-boolean SiteOverlapTracker::invalidate()
-{
-  valid=false;
-}
-
-SiteOverlapTrackerArray::SiteOverlapTrackerArray()
-{
-  site_trackers.reserve(10000);
-}
-
-SiteOverlapTrackerArray::get_next(uint32_t current_index)
-{
-  uint32_t i = current_index;
-  do
-    {
-      i++;
-    }  while (site_trackers[i].is_valid()==false);
-  return i;
-}

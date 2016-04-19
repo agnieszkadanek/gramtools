@@ -42,12 +42,11 @@ csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_constr(std::string fname, s
 void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa, int k,   
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval, //proper (nonzero)
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval_rev,
-			   std::vector<SiteOverlapTracker>& site_trackers,//one per proper (nonempty) interval
-			   std::vector<SiteOverlapTracker>& site_trackers_temp,//one per interval
-			   sequence_map<std::vector<uint8_t>, uint32_t>& kmer_index,//which-th kmer is it
+			   sequence_map<std::vector<uint8_t>, site_tracker_list>& kmer_tracker,
 			   std::vector<int> mask_a, uint64_t maxx, 
-			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile); 
-
+			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile,
+			   SiteInfo* si);
+ 
 uint64_t parse_masks(std::vector<uint64_t>& mask_s, std::vector<int>& mask_a, std::string sites_fname, std::string alleles_fname, std::vector<std::vector<int>>& covgs);
 
 uint64_t bidir_search(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa, 
@@ -60,7 +59,8 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 		  uint64_t num_idx,
 		  uint32_t num, bool last,
 		  std::vector<int>& mask_a,
-		  std::vector<SiteOverlapTracker>::iterator& it_s);
+		  std::vector<SiteOverlapTracker>::iterator& it_s,
+		  SiteInfo* site_info);
 
 bool skip(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
                       uint64_t& left, uint64_t& right,
@@ -78,7 +78,8 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals_rev_temp,
 						site_tracker_list& site_trackers,//one per proper interval, pre-reserved
 						site_tracker_list& site_trackers_temp,//one for all intervals during search
-						std::vector<int> mask_a, uint64_t maxx, bool& first_del
+						std::vector<int> mask_a, uint64_t maxx, bool& first_del,
+						SiteInfo* site_info
 						);
 
 std::vector<uint8_t>::iterator bidir_search_fwd(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
