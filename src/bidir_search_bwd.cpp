@@ -25,7 +25,6 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						SiteInfo* site_info
 						)
 {
-
   std::vector<uint8_t>::iterator pat_it=pat_end;
   interval_list::iterator it, it_rev, it_end, it_rev_end;
   site_tracker_list::iterator it_s;
@@ -104,10 +103,11 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	      // this is the first site that the read overlaps
 	      // push new tracker onto list of trackers (new interval=> new tracker)
 	      site_trackers_temp.push_back(empty_tracker);
-	      it_s++;
+	      ++it_s;
 	      sa_intervals_temp.push_back(std::make_pair(left_new,right_new));
 	      sa_intervals_rev_temp.push_back(std::make_pair(left_rev_new,right_rev_new));
 	      get_location(csa,i,num,last, mask_a, it_s, site_info); 
+	      printf("BOB\n");
 	    }
 	  //there will be entries with pair.second empty (corresp to allele) coming from crossing the last marker
 	  //can delete them here or in top a fcn when calculating coverages

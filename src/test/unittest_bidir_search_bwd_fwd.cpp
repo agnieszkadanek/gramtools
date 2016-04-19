@@ -446,7 +446,7 @@ TEST(BackwardSearchTest, One_match_many_sites){
   EXPECT_EQ(1,sa_intervals.size());
   EXPECT_EQ(no_occ,1);
   EXPECT_EQ(site_trackers.size(),1);
-  EXPECT_EQ(site_trackers[0].sites.size(),1);
+  EXPECT_EQ(site_trackers[0].sites.size(),0);
   //  EXPECT_EQ(site_trackers[0].alleles[0].count(),0);
   sa_intervals.clear();
   sa_intervals_rev.clear();
@@ -454,9 +454,9 @@ TEST(BackwardSearchTest, One_match_many_sites){
   temp_rev.clear();
   site_trackers.clear();
 
-  csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_rev=csa_constr(test_file2,covgs, "int_alphabet_file","memory_log_file","csa_file",false);
+  //csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_rev=csa_constr(test_file2,covgs, "int_alphabet_file","memory_log_file","csa_file",false);
 
-  first_del=false;
+  //first_del=false;
 
   /* debug zam 
   bidir_search_fwd(csa_rev,0,
@@ -478,6 +478,7 @@ TEST(BackwardSearchTest, One_match_many_sites){
   sa_intervals_rev.clear();
 
   p.clear();
+  delete(si);
 }
 
 

@@ -118,7 +118,8 @@ int main(int argc, char* argv[]) {
 	  
 	  if (kmers_in_ref.find(kmer)!=kmers_in_ref.end()) first_del=false;
 	  else first_del=true;
-	  
+	  temp.clear();
+	  temp_rev.clear();
 	  res_it=bidir_search_bwd(csa, (*it).first, (*it).second, 
 				  (*it_rev).first, (*it_rev).second, 
 				  p.begin(),p.begin()+p.size()-k, 
