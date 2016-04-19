@@ -19,16 +19,15 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals_rev,
 						interval_list& sa_intervals_temp, 
 						interval_list& sa_intervals_rev_temp,
-						std::vector<SiteOverlapTracker>& site_trackers,//one per interval, pre-reserved
-						std::vector<SiteOverlapTracker>& site_trackers_temp,
+						site_tracker_list& site_trackers,//one per proper interval, pre-reserved
+						site_tracker_list& site_trackers_temp,//one for all intervals during search
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						)
 {
 
   std::vector<uint8_t>::iterator pat_it=pat_end;
   interval_list::iterator it, it_rev, it_end, it_rev_end;
-  std::vector<SiteOverlapTracker>::iterator it_s;
-  std::vector<uint32_t> it_flag;
+  site_tracker_list::iterator it_s;
   uint32_t count=0;
 
   uint8_t c;

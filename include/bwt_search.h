@@ -33,6 +33,9 @@ using sequence_set = std::unordered_set< SEQUENCE, seq_hash<SEQUENCE> > ;
 
 
 typedef std::vector<std::pair<uint64_t,uint64_t>> interval_list;
+typedef std::vector<SiteOverlapTracker> site_tracker_list;
+
+
 
 csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_constr(std::string fname, std::vector<std::vector<int>>& covgs, char* int_al_fname, char* memory_log_fname, char* csa_file, bool fwd);
 
@@ -73,8 +76,8 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals_rev,
 						interval_list& sa_intervals_temp, 
 						interval_list& sa_intervals_rev_temp,
-						std::vector<SiteOverlapTracker>& site_trackers,//one per interval, pre-reserved
-						std::vector<SiteOverlapTracker>& site_trackers_temp,
+						site_tracker_list& site_trackers,//one per proper interval, pre-reserved
+						site_tracker_list& site_trackers_temp,//one for all intervals during search
 						std::vector<int> mask_a, uint64_t maxx, bool& first_del
 						);
 

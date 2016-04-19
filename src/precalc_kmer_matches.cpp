@@ -18,20 +18,21 @@ using namespace sdsl;
 void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa, int k,   
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval, //proper (nonzero)
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval_rev,
-			   std::vector<SiteOverlapTracker>& site_trackers,//one per proper (nonempty) interval
-			   std::vector<SiteOverlapTracker>& site_trackers_temp,//one per interval
-			   sequence_map<std::vector<uint8_t>, uint32_t>& kmer_index,//which-th kmer is it
+			   sequence_map<std::vector<uint8_t>, site_tracker_list>& kmer_tracker,
 			   std::vector<int> mask_a, uint64_t maxx, 
 			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile) 
 {
   
-  std::vector<SiteOverlapTracker>::iterator it_s;
-  //site_trackers_temp.clear();
-  it_s = site_trackers_temp.begin();
-  
+  //set up some temporary lists for use during this function
   interval_list temp, temp_rev;
   temp.reserve(10000);
   temp_rev.reserve(10000);
+  site_tracker_list site_trackers_temp;
+  site_trackers_temp.reserve(10000);
+
+  site_tracker_list::iterator it_s;
+  it_s = site_trackers_temp.begin();
+  
 
   bool first_del;
   
@@ -50,8 +51,8 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 	  case 'G': case 'g': kmer.push_back(3);break;
 	  case 'T': case 't': kmer.push_back(4);break;
 	  }
-      
-      kmer_index[kmer]=kmer_counter;
+      kmer_sa_interval[kmer].reserve(10000);
+      kmer_sa_interval_rev[kmer].reserve(10000);
       
       first_del=false;
       std::vector<uint8_t>::iterator res_it=
@@ -59,12 +60,12 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 			 kmer.begin(),kmer.end(),
 			 kmer_sa_interval[kmer], kmer_sa_interval_rev[kmer]
 			 temp, temp_rev,
+			 kmer_tracker[kmer],
 			 site_trackers_temp,
 			 mask_a,maxx,first_del);
 
 
       if (!first_del) kmers_in_ref.insert(kmer);
-      kmer_counter++;
       ++it_s;
       temp.clear();
       temp_rev.clear();
