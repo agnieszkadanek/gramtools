@@ -103,7 +103,8 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	    {
 	      // this is the first site that the read overlaps
 	      // push new tracker onto list of trackers (new interval=> new tracker)
-	      //except we pushed the ne tracker above
+	      site_trackers_temp.push_back(empty_tracker);
+	      it_s++;
 	      sa_intervals_temp.push_back(std::make_pair(left_new,right_new));
 	      sa_intervals_rev_temp.push_back(std::make_pair(left_rev_new,right_rev_new));
 	      get_location(csa,i,num,last, mask_a, it_s, site_info); 
