@@ -36,6 +36,7 @@ public:
   }
   SiteOverlapTracker(const SiteOverlapTracker&);
   void push(uint32_t site_id, uint32_t allele, SiteInfo* si);
+  void set(uint32_t site_id, uint32_t allele, SiteInfo* si);
   void clear();
   std::vector<uint32_t> sites;
   std::vector<boost::dynamic_bitset<>> alleles;  
