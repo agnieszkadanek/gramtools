@@ -47,7 +47,9 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   }
   int k=0;
   while (pat_it>pat_begin && !sa_intervals_temp.empty()) {
-    cout<<"Top of loop, c is" << unsigned(c) <<endl;
+    sa_intervals.resize(0);
+    sa_intervals_rev.resize(0);
+    site_trackers.resize(0);
     --pat_it;
     c=*pat_it;
 
@@ -156,7 +158,6 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  sa_intervals.push_back(*it);
 	  sa_intervals_rev.push_back(*it_rev);
 	  site_trackers.push_back(*it_s);
-	  printf("push ");
 	}
       else 
 	{
@@ -175,6 +176,10 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
       ++it_rev;
       ++it_s;
     }
+    //now get ready forthe next iteration:
+    sa_intervals_temp=sa_intervals;
+    sa_intervals_rev_temp=sa_intervals_rev;
+    site_trackers_temp=site_trackers;
   }
 
   

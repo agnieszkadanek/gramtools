@@ -448,6 +448,13 @@ TEST(BackwardSearchTest, One_match_many_sites){
   EXPECT_EQ(site_trackers.size(),1);
   EXPECT_EQ(site_trackers[0].sites.size(),0);
   //  EXPECT_EQ(site_trackers[0].alleles[0].count(),0);
+
+  for (auto i: site_trackers[0].sites)
+    std::cout << i << ' ';
+
+  cout << "\n\n";
+
+
   sa_intervals.clear();
   sa_intervals_rev.clear();
   temp.clear();
