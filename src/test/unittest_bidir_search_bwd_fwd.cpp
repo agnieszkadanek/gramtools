@@ -471,7 +471,7 @@ TEST(BackwardSearchTest, One_match_many_sites){
     no_occ+=(*it).second-(*it).first;
 
   EXPECT_EQ(true,first_del);
-  EXPECT_EQ(1,sa_intervals.size());
+  Expect_EQ(1,sa_intervals.size());
   EXPECT_EQ(no_occ,1);
   */
   sa_intervals.clear();

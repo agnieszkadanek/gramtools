@@ -47,6 +47,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   }
   int k=0;
   while (pat_it>pat_begin && !sa_intervals_temp.empty()) {
+    cout<<"Top of loop, c is" << unsigned(c) <<endl;
     --pat_it;
     c=*pat_it;
 
@@ -102,33 +103,32 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	    {
 	      // this is the first site that the read overlaps
 	      // push new tracker onto list of trackers (new interval=> new tracker)
-	      site_trackers_temp.push_back(empty_tracker);
-	      ++it_s;
 	      sa_intervals_temp.push_back(std::make_pair(left_new,right_new));
 	      sa_intervals_rev_temp.push_back(std::make_pair(left_rev_new,right_rev_new));
+	      site_trackers_temp.push_back(empty_tracker);
 	      get_location(csa,i,num,last, mask_a, it_s, site_info); 
-	      printf("BOB\n");
 	    }
 	  //there will be entries with pair.second empty (corresp to allele) coming from crossing the last marker
 	  //can delete them here or in top a fcn when calculating coverages
-	  else {
-	    if (ignore) 
-	      {
-		//second (or third or..) allele boundary crossed within one site - modify bits of tracker
-		if (num%2==0)
-		  {
-		    get_location(csa,i,num,last, mask_a, it_s, site_info);
-		  }
-		//else ?
-	      }
-	    else {
-	      
-	      //read crossing a new site - push back on tracker 
-	      *it={left_new, right_new}; //std::make_pair(left_new,right_new);
-	      *it_rev={left_rev_new, right_rev_new}; //std::make_pair(left_rev_new,right_rev_new);
-	      get_location(csa,i,num,last, mask_a, it_s, site_info);
+	  else 
+	    {
+	      if (ignore) 
+		{
+		  //second (or third or..) allele boundary crossed within one site - modify bits of tracker
+		  if (num%2==0)
+		    {
+		      get_location(csa,i,num,last, mask_a, it_s, site_info);
+		    }
+		  //else ?
+		}
+	      else 
+		{
+		  //read crossing a new site - push back on tracker 
+		  *it={left_new, right_new}; //std::make_pair(left_new,right_new);
+		  *it_rev={left_rev_new, right_rev_new}; //std::make_pair(left_rev_new,right_rev_new);		  
+		  get_location(csa,i,num,last, mask_a, it_s, site_info);
+		}
 	    }
-	  }
 	  prev_num=num;  
 	}
 	j++;
@@ -156,6 +156,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  sa_intervals.push_back(*it);
 	  sa_intervals_rev.push_back(*it_rev);
 	  site_trackers.push_back(*it_s);
+	  printf("push ");
 	}
       else 
 	{
