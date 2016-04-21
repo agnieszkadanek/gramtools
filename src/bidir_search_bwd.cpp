@@ -70,9 +70,13 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	res= csa.wavelet_tree.range_search_2d((*it).first, (*it).second-1, 5, maxx).second;
 	//might want to sort res based on pair.second - from some examples it looks like sdsl already does that so res is already sorted 
 	uint32_t prev_num=0;
-	for (auto z=res.begin();z!=res.end();++z) { 
+	int counter=0;
+	for (auto z=res.begin();z!=res.end();++z, counter++) { 
+	  //for (int z=0;z<res.size();z++){
+	  
 	  uint64_t i=(*z).first;
 	  uint32_t num=(*z).second;
+	  
 
 	  if (num==prev_num) ignore=true;
 	  else ignore=false;
@@ -85,8 +89,9 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  left_rev_new=(*it_rev).first;
 	  right_rev_new=(*it_rev).second;
        
+	  //if (num!=prev_num && num%2==1) {
 	  if (num!=prev_num && num%2==1) {
-	    if (num==(*(z+1)).second) {
+	    if ( (z!= res.end()) && (z+1 != res.end()) &&  (num==(*(z+1)).second)) {
 	      left_new=csa.C[csa.char2comp[num]]; //need to modify left_rev_new as well?
 	      right_new=left_new+2;
 	    }
