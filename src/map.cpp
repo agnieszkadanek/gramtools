@@ -66,10 +66,13 @@ int main(int argc, char* argv[]) {
   bool first_del=false;
   
   int k=atoi(argv[10]); //verify input
+  printf("Start precalc\n");
+  timestamp();
   precalc_kmer_matches(csa,k,
 		       kmer_sa_intervals,kmer_sa_intervals_rev,			     
 		       kmer_to_trackerlist,
 		       mask_a,maxx,kmers_in_ref,argv[11], si);
+  printf("End precalc\n");
   timestamp();
   
   //setup variables for main bidirectional search

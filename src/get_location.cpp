@@ -8,7 +8,7 @@
 
 using namespace sdsl;
 
-void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
+void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
 		  uint64_t num_idx,
 		  uint32_t num, bool last,
 		  std::vector<int>& mask_a,
@@ -18,7 +18,7 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 {
 
   uint32_t site;
-  int allele;
+  uint32_t allele;
   if (num%2==1) 
     {
       site=(num-5)/2;;
@@ -34,7 +34,8 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
   else 
     {
       site=((num-1)-5)/2;
-      allele=mask_a[csa[num_idx]];
+      //debug allele=mask_a[csa[num_idx]];
+      allele=1;
     }
   
   (*it_s).push(site, allele, site_info);

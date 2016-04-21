@@ -67,15 +67,21 @@ void SiteOverlapTracker::push(uint32_t site_id, uint32_t allele, SiteInfo* si)
     }
   else//either no sites at all yet or a new site
     {
+      printf("Push %d\n", site_id);
       sites.push_back(site_id);
       uint32_t num = si->get_num_alleles(site_id);
       if (allele>num)
 	{
-	  printf("Trying to modify an allele with out of bounds index\n");
+	  printf("Trying to modify an allele %d with out of bounds index beyond %d\n", allele, num-1);
+	  exit(1);
+	}
+      else if (allele<0)
+	{
+	  printf("Trying to modify negative allele %d\n", allele);
 	  exit(1);
 	}
       alleles.push_back(boost::dynamic_bitset<>(num) );
-      alleles.back()[allele]=1;
+      // TEMPORARY ZAM alleles.back()[allele]=1;
     }
 }
 

@@ -15,7 +15,7 @@ using namespace sdsl;
 
 //what to do with Ns?
 
-void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa, int k,   
+void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa, int k,   
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval, //proper (nonzero)
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval_rev,
 			   sequence_map<std::vector<uint8_t>, site_tracker_list>& kmer_tracker,
@@ -68,8 +68,8 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
 
       if (!first_del) kmers_in_ref.insert(kmer);
       ++it_s;
-      temp.clear();
-      temp_rev.clear();
+      temp.resize(0);
+      temp_rev.resize(0);
     }
 }
 

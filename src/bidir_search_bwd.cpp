@@ -10,7 +10,7 @@
 using namespace sdsl;
 
 // should make csa template to have control from cmd line over SA sampling density
-std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa,
+std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
 						uint64_t left, uint64_t right,
 						uint64_t left_rev, uint64_t right_rev,
 						std::vector<uint8_t>::iterator pat_begin, 
@@ -182,10 +182,12 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
       ++it_s;
     }
     //now get ready forthe next iteration:
-    sa_intervals_temp=sa_intervals;
+    sa_intervals_temp    =sa_intervals;
     sa_intervals_rev_temp=sa_intervals_rev;
-    site_trackers_temp=site_trackers;
-  }
+    site_trackers_temp   =site_trackers;
+
+
+  }//end of loop - time to increment pattern by one more character
 
   
   
