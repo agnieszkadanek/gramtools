@@ -24,7 +24,7 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
       site=(num-5)/2;;
       if (!last)
 	{
-	  allele=1;
+	  allele=0;
 	}
       else
 	{
@@ -34,8 +34,8 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
   else 
     {
       site=((num-1)-5)/2;
-      //debug allele=mask_a[csa[num_idx]];
-      allele=1;
+      allele=mask_a[csa[num_idx]];
+      printf("got allele %d\n", allele);
     }
   
   (*it_s).push(site, allele, site_info);

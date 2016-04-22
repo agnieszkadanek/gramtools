@@ -81,7 +81,8 @@ void SiteOverlapTracker::push(uint32_t site_id, uint32_t allele, SiteInfo* si)
 	  exit(1);
 	}
       alleles.push_back(boost::dynamic_bitset<>(num) );
-      // TEMPORARY ZAM alleles.back()[allele]=1;
+      printf("Push allele %d on site %d\n", allele, site_id);
+      alleles.back()[allele]=1;
     }
 }
 

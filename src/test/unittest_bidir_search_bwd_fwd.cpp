@@ -448,6 +448,7 @@ TEST(BackwardSearchTest, One_match_many_sites){
   EXPECT_EQ(site_trackers.size(),1);
   EXPECT_EQ(site_trackers[0].sites.size(),6);
   EXPECT_EQ(site_trackers[0].alleles.size(),6);//010011
+
   EXPECT_EQ(site_trackers[0].alleles[0][0],1);
   EXPECT_EQ(site_trackers[0].alleles[0][1],0);
   EXPECT_EQ(site_trackers[0].alleles[1][0],0);
@@ -465,6 +466,11 @@ TEST(BackwardSearchTest, One_match_many_sites){
   temp.clear();
   temp_rev.clear();
   site_trackers.clear();
+
+
+  for (auto i: site_trackers[0].sites)
+    std::cout << i << ' ';
+
 
   //csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_rev=csa_constr(test_file2,covgs, "int_alphabet_file","memory_log_file","csa_file",false);
 
