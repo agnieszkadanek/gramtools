@@ -446,15 +446,20 @@ TEST(BackwardSearchTest, One_match_many_sites){
   EXPECT_EQ(1,sa_intervals.size());
   EXPECT_EQ(no_occ,1);
   EXPECT_EQ(site_trackers.size(),1);
-  EXPECT_EQ(site_trackers[0].sites.size(),0);
-  //  EXPECT_EQ(site_trackers[0].alleles[0].count(),0);
-
-  for (auto i: site_trackers[0].sites)
-    std::cout << i << ' ';
-
-  cout << "\n\n";
-
-
+  EXPECT_EQ(site_trackers[0].sites.size(),6);
+  EXPECT_EQ(site_trackers[0].alleles.size(),6);//010011
+  EXPECT_EQ(site_trackers[0].alleles[0][0],1);
+  EXPECT_EQ(site_trackers[0].alleles[0][1],0);
+  EXPECT_EQ(site_trackers[0].alleles[1][0],0);
+  EXPECT_EQ(site_trackers[0].alleles[1][1],1);
+  EXPECT_EQ(site_trackers[0].alleles[2][0],1);
+  EXPECT_EQ(site_trackers[0].alleles[2][1],0);
+  EXPECT_EQ(site_trackers[0].alleles[3][0],1);
+  EXPECT_EQ(site_trackers[0].alleles[3][1],0);
+  EXPECT_EQ(site_trackers[0].alleles[4][0],0);
+  EXPECT_EQ(site_trackers[0].alleles[4][1],1);
+  EXPECT_EQ(site_trackers[0].alleles[5][0],0);
+  EXPECT_EQ(site_trackers[0].alleles[5][1],1);
   sa_intervals.clear();
   sa_intervals_rev.clear();
   temp.clear();
