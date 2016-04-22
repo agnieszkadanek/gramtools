@@ -47,6 +47,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   }
   int k=0;
   while (pat_it>pat_begin && !sa_intervals_temp.empty()) {
+
     sa_intervals.resize(0);
     sa_intervals_rev.resize(0);
     site_trackers.resize(0);
@@ -72,12 +73,10 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	uint32_t prev_num=0;
 	int counter=0;
 	for (auto z=res.begin();z!=res.end();++z, counter++) { 
-	  //for (int z=0;z<res.size();z++){
 	  
 	  uint64_t i=(*z).first;
 	  uint32_t num=(*z).second;
 	  
-
 	  if (num==prev_num) ignore=true;
 	  else ignore=false;
 
@@ -85,11 +84,9 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  right_new=(*it).second;
 
 	  //need original [l,r] to for the next loop iterations
-
 	  left_rev_new=(*it_rev).first;
 	  right_rev_new=(*it_rev).second;
        
-	  //if (num!=prev_num && num%2==1) {
 	  if (num!=prev_num && num%2==1) {
 	    if ( (z!= res.end()) && (z+1 != res.end()) &&  (num==(*(z+1)).second)) {
 	      left_new=csa.C[csa.char2comp[num]]; //need to modify left_rev_new as well?
@@ -119,7 +116,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  //can delete them here or in top a fcn when calculating coverages
 	  else 
 	    {
-	      if (ignore) 
+	      if ( (ignore)  && (first_del==false) ) //debug change
 		{
 		  //second (or third or..) allele boundary crossed within one site - modify bits of tracker
 		  if (num%2==0)

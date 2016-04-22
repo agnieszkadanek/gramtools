@@ -18,12 +18,13 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
 {
 
   uint32_t site;
-  uint32_t allele;
+  int allele;
   if (num%2==1) 
     {
       site=(num-5)/2;;
       if (!last)
 	{
+	  //then must be initial odd number, so must be hitting first allele
 	  allele=0;
 	}
       else
@@ -35,7 +36,6 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
     {
       site=((num-1)-5)/2;
       allele=mask_a[csa[num_idx]];
-      printf("got allele %d\n", allele);
     }
   
   (*it_s).push(site, allele, site_info);

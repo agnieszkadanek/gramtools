@@ -459,19 +459,14 @@ TEST(BackwardSearchTest, One_match_many_sites){
   EXPECT_EQ(site_trackers[0].alleles[3][1],0);
   EXPECT_EQ(site_trackers[0].alleles[4][0],0);
   EXPECT_EQ(site_trackers[0].alleles[4][1],1);
-  EXPECT_EQ(site_trackers[0].alleles[5][0],0);
-  EXPECT_EQ(site_trackers[0].alleles[5][1],1);
+
   sa_intervals.clear();
   sa_intervals_rev.clear();
   temp.clear();
   temp_rev.clear();
   site_trackers.clear();
 
-
-  for (auto i: site_trackers[0].sites)
-    std::cout << i << ' ';
-
-
+  
   //csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2> csa_rev=csa_constr(test_file2,covgs, "int_alphabet_file","memory_log_file","csa_file",false);
 
   //first_del=false;
@@ -508,7 +503,7 @@ vector<string> generate_all_substrings(string q) {
 
   n=q.size();
   for (c=0; c<n; c++) {
-    for (i=1; i<=n-c; i++) {
+    for (i=1; i<n-c; i++) {
       substrings.push_back(q.substr(c,c+i));
     }
   }
