@@ -43,7 +43,7 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval, //proper (nonzero)
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval_rev,
 			   sequence_map<std::vector<uint8_t>, site_tracker_list>& kmer_tracker,
-			   std::vector<int> mask_a, uint64_t maxx, 
+			   std::vector<int>& mask_a, uint64_t maxx, 
 			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile,
 			   SiteInfo* si);
  
@@ -78,7 +78,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals_rev_temp,
 						site_tracker_list& site_trackers,//one per proper interval, pre-reserved
 						site_tracker_list& site_trackers_temp,//one for all intervals during search
-						std::vector<int> mask_a, uint64_t maxx, bool& first_del,
+						std::vector<int>& mask_a, uint64_t maxx, bool& first_del,
 						SiteInfo* site_info
 						);
 
@@ -89,6 +89,6 @@ std::vector<uint8_t>::iterator bidir_search_fwd(csa_wt<wt_int<bit_vector,rank_su
 						std::list<std::pair<uint64_t,uint64_t>>& sa_intervals,
 						std::list<std::pair<uint64_t,uint64_t>>& sa_intervals_rev,
 						std::list<std::vector<std::pair<uint32_t, std::vector<int>>>>& sites,
-						std::vector<int> mask_a, uint64_t maxx, bool& first_del);
+						std::vector<int>& mask_a, uint64_t maxx, bool& first_del);
 
 #endif

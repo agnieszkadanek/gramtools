@@ -16,7 +16,7 @@ std::vector<uint8_t>::iterator bidir_search_fwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals_rev,
 						SiteOverlapTracker* tracker,
 						SiteMarkerArray * prg_sites,
-						std::vector<int> mask_a, uint64_t maxx, bool& first_del)
+						std::vector<int>& mask_a, uint64_t maxx, bool& first_del)
 
 //need to swap * with *_rev everywhere
 {

@@ -21,7 +21,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 						interval_list& sa_intervals_rev_temp,
 						site_tracker_list& site_trackers,//one per proper interval, pre-reserved
 						site_tracker_list& site_trackers_temp,//one for all intervals during search
-						std::vector<int> mask_a, uint64_t maxx, bool& first_del,
+						std::vector<int>& mask_a, uint64_t maxx, bool& first_del,
 						SiteInfo* site_info
 						)
 {
@@ -47,7 +47,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   }
   int k=0;
   while (pat_it>pat_begin && !sa_intervals_temp.empty()) {
-
+    printf("Start pat loop\n");
     sa_intervals.resize(0);
     sa_intervals_rev.resize(0);
     site_trackers.resize(0);
@@ -116,7 +116,7 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  //can delete them here or in top a fcn when calculating coverages
 	  else 
 	    {
-	      if ( (ignore)  && (first_del==false) ) //debug change
+	      if (ignore) // rhs was for debug  && (first_del==false) ) 
 		{
 		  //second (or third or..) allele boundary crossed within one site - modify bits of tracker
 		  if (num%2==0)

@@ -19,7 +19,7 @@ void precalc_kmer_matches (csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval, //proper (nonzero)
 			   sequence_map<std::vector<uint8_t>, interval_list>& kmer_sa_interval_rev,
 			   sequence_map<std::vector<uint8_t>, site_tracker_list>& kmer_tracker,
-			   std::vector<int> mask_a, uint64_t maxx, 
+			   std::vector<int>& mask_a, uint64_t maxx, 
 			   sequence_set<std::vector<uint8_t>>& kmers_in_ref, char * kmerfile,
 			   SiteInfo* si) 
 {

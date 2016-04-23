@@ -70,7 +70,7 @@ void SiteOverlapTracker::push(uint32_t site_id, uint32_t allele, SiteInfo* si)
       printf("Push %d\n", site_id);
       sites.push_back(site_id);
       uint32_t num = si->get_num_alleles(site_id);
-      if (allele>num)
+      if (allele>num-1)
 	{
 	  printf("Trying to modify an allele %d with out of bounds index beyond %d\n", allele, num-1);
 	  exit(1);
