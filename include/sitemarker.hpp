@@ -32,7 +32,7 @@ class SiteOverlapTracker
 public:
   SiteOverlapTracker(): alleles(2, boost::dynamic_bitset<>(2))
   {
-    sites.reserve(2);
+    //sites.reserve(2);
   }
   SiteOverlapTracker(const SiteOverlapTracker&);
   void push(uint32_t site_id, uint32_t allele, SiteInfo* si);
