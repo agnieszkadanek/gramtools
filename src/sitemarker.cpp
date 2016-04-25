@@ -67,7 +67,6 @@ void SiteOverlapTracker::push(uint32_t site_id, uint32_t allele, SiteInfo* si)
     }
   else//either no sites at all yet or a new site
     {
-      printf("Push %d\n", site_id);
       sites.push_back(site_id);
       uint32_t num = si->get_num_alleles(site_id);
       if (allele>num-1)
@@ -81,7 +80,6 @@ void SiteOverlapTracker::push(uint32_t site_id, uint32_t allele, SiteInfo* si)
 	  exit(1);
 	}
       alleles.push_back(boost::dynamic_bitset<>(num) );
-      printf("Push allele %d on site %d\n", allele, site_id);
       alleles.back()[allele]=1;
     }
 }

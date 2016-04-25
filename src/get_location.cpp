@@ -16,7 +16,6 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
 		  SiteInfo* site_info)
 
 {
-
   uint32_t site;
   int allele;
   if (num%2==1) 
@@ -24,7 +23,10 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
       site=(num-5)/2;;
       if (!last)
 	{
-	  //then must be initial odd number, so must be hitting first allele
+	  //then must be initial odd number, 
+	  //so must be hitting first allele
+	  //mask file counts from 1, 
+	  //but for this I want from 0:
 	  allele=0;
 	}
       else
@@ -35,7 +37,18 @@ void get_location(csa_wt<wt_int<bit_vector,rank_support_v5<>>,2,2>& csa,
   else 
     {
       site=((num-1)-5)/2;
-      allele=mask_a[csa[num_idx]];
+      allele=mask_a[csa[num_idx]]-1;
+      /*      printf("Looking at site %d\nmask is ", site);
+      int y;
+      
+      for (y=0; y<mask_a.size(); y++)
+	{
+	  printf("%d ", mask_a[y]);
+	}
+      printf("\n");
+      printf("csa[num_idx]+1 is %d\n", (int) csa[num_idx]+1);
+      printf("mas_a[csa[num_idx]+1 is %d\n", mask_a[csa[num_idx]+1]);*/
+
     }
   
   (*it_s).push(site, allele, site_info);

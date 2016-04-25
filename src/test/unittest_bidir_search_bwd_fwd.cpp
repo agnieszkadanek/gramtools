@@ -444,22 +444,31 @@ TEST(BackwardSearchTest, One_match_many_sites){
 
   EXPECT_EQ(true,first_del);
   EXPECT_EQ(1,sa_intervals.size());
-  EXPECT_EQ(no_occ,1);
-  EXPECT_EQ(site_trackers.size(),1);
-  EXPECT_EQ(site_trackers[0].sites.size(),6);
-  EXPECT_EQ(site_trackers[0].alleles.size(),6);//010011
+  EXPECT_EQ(1,no_occ);
+  EXPECT_EQ(1,site_trackers.size());
+  EXPECT_EQ(6,site_trackers[0].sites.size());
+  EXPECT_EQ(6,site_trackers[0].alleles.size());//010011
 
-  EXPECT_EQ(site_trackers[0].alleles[0][0],1);
-  EXPECT_EQ(site_trackers[0].alleles[0][1],0);
-  EXPECT_EQ(site_trackers[0].alleles[1][0],0);
-  EXPECT_EQ(site_trackers[0].alleles[1][1],1);
-  EXPECT_EQ(site_trackers[0].alleles[2][0],1);
-  EXPECT_EQ(site_trackers[0].alleles[2][1],0);
-  EXPECT_EQ(site_trackers[0].alleles[3][0],1);
-  EXPECT_EQ(site_trackers[0].alleles[3][1],0);
-  EXPECT_EQ(site_trackers[0].alleles[4][0],0);
-  EXPECT_EQ(site_trackers[0].alleles[4][1],1);
+  EXPECT_EQ(5, site_trackers[0].sites[0]);
+  EXPECT_EQ(4, site_trackers[0].sites[1]);
+  EXPECT_EQ(3, site_trackers[0].sites[2]);
+  EXPECT_EQ(2, site_trackers[0].sites[3]);
+  EXPECT_EQ(1, site_trackers[0].sites[4]);
+  EXPECT_EQ(0, site_trackers[0].sites[5]);
 
+  EXPECT_EQ(0,site_trackers[0].alleles[0][0]);
+  EXPECT_EQ(1,site_trackers[0].alleles[0][1]);
+  EXPECT_EQ(0,site_trackers[0].alleles[1][0]);
+  EXPECT_EQ(1,site_trackers[0].alleles[1][1]);
+  EXPECT_EQ(1,site_trackers[0].alleles[2][0]);
+  EXPECT_EQ(0,site_trackers[0].alleles[2][1]);
+  EXPECT_EQ(1,site_trackers[0].alleles[3][0]);
+  EXPECT_EQ(0,site_trackers[0].alleles[3][1]);
+  EXPECT_EQ(0,site_trackers[0].alleles[4][0]);
+  EXPECT_EQ(1,site_trackers[0].alleles[4][1]);
+  EXPECT_EQ(1,site_trackers[0].alleles[5][0]);
+  EXPECT_EQ(0,site_trackers[0].alleles[5][1]);
+  
   sa_intervals.clear();
   sa_intervals_rev.clear();
   temp.clear();
