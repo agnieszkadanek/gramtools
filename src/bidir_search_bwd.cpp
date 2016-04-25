@@ -47,7 +47,6 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
   }
   int k=0;
   while (pat_it>pat_begin && !sa_intervals_temp.empty()) {
-    printf("Start pat loop\n");
     sa_intervals.resize(0);
     sa_intervals_rev.resize(0);
     site_trackers.resize(0);
@@ -69,10 +68,13 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
       while(j<init_list_size) {
 	//don't do this for first letter searched
 	res= csa.wavelet_tree.range_search_2d((*it).first, (*it).second-1, 5, maxx).second;
-	//might want to sort res based on pair.second - from some examples it looks like sdsl already does that so res is already sorted 
+	// might want to sort res based 
+	// on pair.second - from some examples 
+	// it looks like sdsl already does that
+	// so res is already sorted 
 	uint32_t prev_num=0;
-	int counter=0;
-	for (auto z=res.begin();z!=res.end();++z, counter++) { 
+
+	for (auto z=res.begin();z!=res.end();++z) { 
 	  
 	  uint64_t i=(*z).first;
 	  uint32_t num=(*z).second;
@@ -87,16 +89,22 @@ std::vector<uint8_t>::iterator bidir_search_bwd(csa_wt<wt_int<bit_vector,rank_su
 	  left_rev_new=(*it_rev).first;
 	  right_rev_new=(*it_rev).second;
        
-	  if (num!=prev_num && num%2==1) {
-	    if ( (z!= res.end()) && (z+1 != res.end()) &&  (num==(*(z+1)).second)) {
-	      left_new=csa.C[csa.char2comp[num]]; //need to modify left_rev_new as well?
-	      right_new=left_new+2;
+	  if (num!=prev_num && num%2==1) 
+	    {
+	      if ( (z!= res.end()) && 
+		   (z+1 != res.end()) &&  
+		   (num==(*(z+1)).second)) 
+		{
+		  //need to modify left_rev_new as well?
+		  left_new=csa.C[csa.char2comp[num]]; 
+		  right_new=left_new+2;
+		}
+	      else 
+		{
+		  left_new=i;
+		  right_new=i+1;
+		}
 	    }
-	    else {
-	      left_new=i;
-	      right_new=i+1;
-	    }
-	  }
 
  	  last=skip(csa,left_new,right_new,left_rev_new,right_rev_new,num);
 	
